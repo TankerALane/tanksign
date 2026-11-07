@@ -17,7 +17,8 @@ panel (docs/DECISIONS.md D-006 to D-008).
 - Tank detection: role, then Main Tank, then a fixed name (`/ts tank <Name>`), then top threat.
 - One enabled flag for `/ts on|off|toggle`, the skull button on the panel and the "Toggle Tanksign"
   key binding. Off means no events and no updates; in combat the panel fades and hides after the fight.
-- Key bindings: Toggle Tanksign, Skull the tank's target, Skull the mob under the mouse.
+- Key bindings: Toggle Tanksign, Skull the tank's target, Skull the mob under the mouse (both marking
+  keys confirmed in game).
 - Commands: status, show, hide, lock, unlock, tank, source, marker, rows, scale, group, reset, debug.
 
 ## 0.1.0 (unreleased): stage 1, probe build

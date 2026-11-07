@@ -117,3 +117,5 @@ blocked; the panel's right-click (`type2=target`) did the same in ~20 clicks in 
 Right-click targeting is removed. `/assist party1` was inconclusive (the check only looked at
 nameplate1); a "target the tank's target" key is added only if Austin sees it work.
 Left-click marking is confirmed by eye in a dungeon, in combat.
+Key bindings "Skull the tank's target" and "Skull the mob under the mouse" confirmed working in
+game by Austin (2026-11-06).
