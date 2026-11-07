@@ -142,6 +142,9 @@ function W.Toggle(parent, label, get, set, width)
     return t
 end
 
+-- Where option controls start, right of their labels (long labels need the room).
+W.CONTROL_X = 250
+
 -- "Label: [ value ]" button that steps through choices. getText() shows the current
 -- value; onClick advances it.
 function W.Cycle(parent, label, getText, onClick, width)
@@ -151,7 +154,7 @@ function W.Cycle(parent, label, getText, onClick, width)
     f.label:SetPoint("LEFT")
     f.label:SetText(label)
     f.button = W.Button(f, "", width or 150, 20, function() onClick(); f:Refresh() end)
-    f.button:SetPoint("LEFT", 170, 0)
+    f.button:SetPoint("LEFT", W.CONTROL_X, 0)
     function f:Refresh() self.button.text:SetText(getText()) end
     f:Refresh()
     return f
@@ -167,7 +170,7 @@ function W.Slider(parent, label, lo, hi, step, get, set, fmt)
     local s = CreateFrame("Slider", nil, f)
     s:SetOrientation("HORIZONTAL")
     s:SetSize(150, 14)
-    s:SetPoint("LEFT", 170, 0)
+    s:SetPoint("LEFT", W.CONTROL_X, 0)
     s:SetMinMaxValues(lo, hi)
     s:SetValueStep(step)
     s:SetObeyStepOnDrag(true)

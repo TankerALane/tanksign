@@ -9,6 +9,16 @@ one click. It is an addon for World of Warcraft, built for **WoW Forever**.
 > **Status: 0.9.0 beta.** Everything below is confirmed in game on WoW Forever (open world and
 > dungeons, in combat). See [docs/ROADMAP.md](docs/ROADMAP.md).
 
+## Screenshots
+
+Skull and X placed from the panel, in combat. The icons show on the rows and above the nameplates:
+
+![The Tanksign panel in combat with a skull and an X placed](assets/screenshots/marked-combat.png)
+
+The options page (Esc > Options > AddOns > Tanksign):
+
+<img src="assets/screenshots/ts_options1.png" alt="Options page: core, choosing the mob, marking" width="49%"> <img src="assets/screenshots/ts_options2.png" alt="Options page: panel, alerts, key bindings, profiles" width="49%">
+
 ## Why it is a panel and not automatic
 
 Tanksign was planned to find the lowest-health mob the tank holds and skull it by itself. The

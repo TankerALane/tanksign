@@ -91,7 +91,7 @@ local function build()
     nameLabel:SetText(L.OPT_TANK_NAME)
     place(nameLabel, 0)
     local nameBox = W.EditBox(content, 150, function(text) set("tankName", text) end)
-    nameBox:SetPoint("TOPLEFT", content, "TOPLEFT", 186, y + 2)
+    nameBox:SetPoint("TOPLEFT", content, "TOPLEFT", 16 + W.CONTROL_X, y + 2)
     nameBox.Refresh = function(self) if not self:HasFocus() then self:SetText(settings().tankName) end end
     controls[#controls + 1] = nameBox
     y = y - 26
@@ -131,7 +131,10 @@ local function build()
     note(L.OPT_ALERTS_NOTE)
 
     heading(L.OPT_KEYS)
-    keysText = note("", "text")
+    keysText = W.Text(content, "body", "text")
+    keysText:SetWidth(540)
+    keysText:SetSpacing(4)
+    place(keysText, 64) -- three lines, one per key
     note(L.OPT_KEYS_NOTE)
 
     heading(L.OPT_PROFILES)
@@ -141,7 +144,7 @@ local function build()
     newLabel:SetText(L.OPT_NEW_PROFILE)
     place(newLabel, 0)
     profileEdit = W.EditBox(content, 150, function(text) Options.NewProfile(text) end)
-    profileEdit:SetPoint("TOPLEFT", content, "TOPLEFT", 186, y + 2)
+    profileEdit:SetPoint("TOPLEFT", content, "TOPLEFT", 16 + W.CONTROL_X, y + 2)
     y = y - 28
     place(W.Button(content, L.OPT_DELETE_PROFILE, 170, 22, function() Options.DeleteProfile() end), 30)
     local auto = W.Toggle(content, L.OPT_AUTO_PROFILE, function() return _G.TanksignDB.autoProfile == true end,

@@ -12,6 +12,9 @@
 - **Game version:** WoW Forever 1.60.1
 - **Source:** https://github.com/TankerALane/tanksign
 - **Issues:** https://github.com/TankerALane/tanksign/issues
+- **Avatar:** `assets/logo/png/logo-square-400.png`
+- **Images tab:** `assets/screenshots/marked-combat.png` ("Skull and X from the panel, in combat"),
+  `ts_options1.png` and `ts_options2.png` ("The options page")
 
 ---
 
