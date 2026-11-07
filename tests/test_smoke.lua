@@ -153,3 +153,48 @@ H.test("fallback TOC only prints a message", function()
     H.ok(ctl.chatText():find("not supported", 1, true), ctl.chatText())
     H.eq(ctl.ns.Probe, nil)
 end)
+
+H.test("secure skull buttons: built out of combat, clicks recorded, tank's target button", function()
+    local env, ctl = boot()
+    ctl.group, ctl.groupSize = true, 3
+    ctl.roles = { party2 = "TANK" }
+    local u = hostile(ctl, "target")
+    ctl.combat = true
+    ctl.slash("probe buttons")
+    H.ok(ctl.chatText():find("only be shown or hidden out of combat", 1, true))
+    ctl.combat = false
+    ctl.slash("probe buttons")
+    local buttons = {}
+    for _, f in ipairs(ctl.frames) do
+        if f._template == "SecureActionButtonTemplate" and f._attrs.type then buttons[#buttons + 1] = f end
+    end
+    H.eq(#buttons, 3)
+    H.eq(buttons[3]._attrs.unit, "party2target")
+    buttons[1]:Click("LeftButton", true)
+    ctl.advance(1)
+    H.eq(u.mark, 8)
+    local rec = env.TanksignDB.probe.secureMarks[1]
+    H.eq(rec.before, "nil")
+    H.eq(rec.after, "8")
+    H.eq(rec.blocked, "no")
+    ctl.slash("probe")
+    local text = table.concat(env.TanksignDB.probe.lastReport, "\n")
+    H.ok(text:find("secure at=", 1, true) and text:find("after=8", 1, true), text)
+    ctl.slash("probe buttons")
+    H.ok(ctl.chatText():find("buttons hidden", 1, true))
+end)
+
+H.test("unit samples include group threat, secrecy predicates and the display test", function()
+    local env, ctl = boot()
+    ctl.group, ctl.groupSize = true, 2
+    env.C_Secrets = { ShouldUnitHealthMaxBeSecret = function() return true end }
+    hostile(ctl, "target", { hp = ctl.secret, hpMax = ctl.secret })
+    ctl.slash("probe")
+    local text = table.concat(env.TanksignDB.probe.lastReport, "\n")
+    H.ok(text:find("threat.party1=", 1, true), text)
+    H.ok(text:find("tgtOf.party1=", 1, true))
+    H.ok(text:find("s.hpMax=true", 1, true))
+    H.ok(text:find("s.thrVal=MISSING", 1, true))
+    H.ok(text:find("bar=ok,ok,ok", 1, true))
+    H.ok(not text:find("touched a secret", 1, true))
+end)

@@ -26,7 +26,31 @@ by an addon at all. The `x:units.sample` lines and the combat samples answer thi
 
 ## Findings
 
-(Filled in from the first Forever probe report.)
+From `docs/verify-reports/forever-2026-11-06-probe1.txt` (Durotar, 5-person party, Austin as
+healer, then party leader; mobs fought solo-style with the tank elsewhere):
+
+- **Enemy health is secret in combat.** `UnitHealth`, `UnitHealthMax` and `UnitHealthPercent`
+  were SECRET on every hostile unit in every combat sample (6 samples, 2 fights), including a
+  nearby mob that was not itself in combat. Out-of-combat health is not yet known (no mob was
+  visible during the out-of-combat probe).
+- **`SetRaidTarget` is forbidden to addon code**, in and out of combat and as party leader:
+  `ADDON_ACTION_FORBIDDEN` ("UNKNOWN()"), marker unchanged. Automatic marking is impossible.
+- **`TargetUnit` is forbidden**, as expected.
+- **Threat is partly readable.** `UnitThreatSituation("player", mob)` was a plain number (3) on
+  both the target and nameplate tokens. `UnitDetailedThreatSituation("player", mob)` was plain on
+  the `target` token (`true,3,100,255,75`) but SECRET on the `nameplate1` token for the same mob.
+  Party members returned nothing (they were not on those mobs' threat lists).
+- **Identity is readable:** names, GUIDs, `UnitIsUnit`, `UnitCanAttack`, classification, creature
+  type, power type, `GetRaidTargetIndex` and `CanBeRaidTarget` were plain.
+- **Roles are readable:** `UnitGroupRolesAssigned` gives TANK/HEALER/DAMAGER per member;
+  `GetPartyAssignment("MAINTANK")` exists (false for everyone in a party).
+- Events fire as expected: `NAME_PLATE_UNIT_ADDED/REMOVED`, `UNIT_THREAT_LIST_UPDATE`,
+  `UNIT_HEALTH`, `RAID_TARGET_UPDATE`, `PLAYER_REGEN_*`. All 66 probed APIs exist.
+- `C_Secrets` exists with per-unit predicates (`ShouldUnitHealthMaxBeSecret`,
+  `ShouldUnitThreatValuesBeSecret`, ...) and Blizzard ships a built-in `RAIDTARGET8` key binding.
+
+Probe round 2 (`/ts probe buttons`, group threat per member, `C_Secrets` per unit, status-bar
+display of secret health) answers whether a click-to-mark helper is possible.
 
 <!-- GENERATED:BEGIN (tools/gen_verify_doc.py) -->
 
@@ -103,6 +127,26 @@ by an addon at all. The `x:units.sample` lines and the combat samples answer thi
 | `GetRaidTargetIndex` | api | read the marker on a unit | `/dump type(GetRaidTargetIndex)` -> "function" | ? |
 | `CanBeRaidTarget` | api | optional: can this unit carry a marker | `/dump type(CanBeRaidTarget)` -> "function" | ? |
 | `ev:RAID_TARGET_UPDATE` | event | a marker moved (detect manual marks) | `/dump C_EventUtils.IsEventValid("RAID_TARGET_UPDATE")` -> true | ? |
+| `x:secure.mark` | custom | results of /ts probe buttons: can a secure button you click place the skull | `/ts probe buttons` | ? |
+
+### Secrets
+
+| ID | Kind | What it is for | In-game test | Forever |
+|---|---|---|---|---|
+| `C_Secrets.ShouldUnitHealthMaxBeSecret` | api | Blizzard's own answer: is this unit's health secret | `/dump type(C_Secrets.ShouldUnitHealthMaxBeSecret)` -> "function" | ? |
+| `C_Secrets.ShouldUnitThreatValuesBeSecret` | api | Blizzard's own answer: are threat values on this unit secret | `/dump type(C_Secrets.ShouldUnitThreatValuesBeSecret)` -> "function" | ? |
+| `C_Secrets.ShouldUnitThreatStateBeSecret` | api | Blizzard's own answer: is threat status on this unit secret | `/dump type(C_Secrets.ShouldUnitThreatStateBeSecret)` -> "function" | ? |
+
+### Targeting
+
+| ID | Kind | What it is for | In-game test | Forever |
+|---|---|---|---|---|
+| `RegisterUnitWatch` | api | secure frames that show and hide with a unit, even in combat | `/dump type(RegisterUnitWatch)` -> "function" | ? |
+
+### Marking
+
+| ID | Kind | What it is for | In-game test | Forever |
+|---|---|---|---|---|
 | `x:mark.test` | custom | results of /ts probe mark (solo, party leader, party member, in combat) | `/ts probe mark` | ? |
 
 ### Group

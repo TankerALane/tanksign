@@ -18,6 +18,7 @@ L.HELP_LINES = {
     "/ts probe mark  - try to put a skull on your target (tests marking rights)",
     "/ts probe unmark  - remove the marker from your target",
     "/ts probe target  - try an addon target change (expect Blizzard's 'blocked' popup)",
+    "/ts probe buttons  - show/hide secure skull buttons you click yourself (out of combat)",
     "/ts probe combat on|off  - sample unit values automatically in combat (on by default)",
     "/ts probe clear  - forget saved probe samples",
     "/ts version  - show the version",
@@ -35,6 +36,14 @@ L.PROBE_ALREADY_SKULL = "Probe: your target already has the skull. Setting it ag
 L.PROBE_MARK_RESULT = "Probe mark: call %s, marker before=%s after=%s, in combat=%s, blocked=%s."
 L.PROBE_TARGET_WARN = "Probe target: trying TargetUnit(\"player\"). If Blizzard shows an 'addon blocked' popup, choose Ignore; that popup is the answer we need."
 L.PROBE_TARGET_RESULT = "Probe target: call %s, blocked=%s, your target is now yourself=%s."
+L.PROBE_SECURE_RESULT = "Probe button [%s] down=%s: marker before=%s after=%s, blocked=%s."
+L.PROBE_BUTTONS_ON = "Probe: secure skull buttons shown (drag to move). Target a mob and click each one; also try them in combat. /ts probe buttons again (out of combat) hides them."
+L.PROBE_BUTTONS_OFF = "Probe: secure skull buttons hidden."
+L.PROBE_BUTTONS_COMBAT = "Probe: secure buttons can only be shown or hidden out of combat."
+L.PROBE_BUTTONS_TITLE = "Tanksign probe: click to mark"
+L.PROBE_BTN_RAIDTARGET = "Skull target (secure)"
+L.PROBE_BTN_MACRO = "Skull target (/tm 8 macro)"
+L.PROBE_BTN_TANK = "Skull tank's target (secure)"
 L.PROBE_UNKNOWN = "Unknown probe command. Try /ts probe, /ts probe mark, /ts probe target."
 
 L.COPY_HINT = "Ctrl+A then Ctrl+C copies everything. Esc closes."

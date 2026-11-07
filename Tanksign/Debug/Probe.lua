@@ -134,9 +134,44 @@ local function sampleUnit(token, members)
     put("dThreat", call("UnitDetailedThreatSituation", "player", token))
     for i, m in ipairs(members) do
         if i > MAX_GROUP_THREAT then break end
-        if m ~= "player" then put("dThreat." .. m, call("UnitDetailedThreatSituation", m, token)) end
+        if m ~= "player" then
+            put("dThreat." .. m, call("UnitDetailedThreatSituation", m, token))
+            put("threat." .. m, call("UnitThreatSituation", m, token))
+            put("tgtOf." .. m, call("UnitIsUnit", m .. "target", token))
+        end
     end
+    -- Blizzard's own secrecy predicates, asked about this unit.
+    put("s.hpMax", call("C_Secrets.ShouldUnitHealthMaxBeSecret", token))
+    put("s.thrVal", call("C_Secrets.ShouldUnitThreatValuesBeSecret", token))
+    put("s.thrState", call("C_Secrets.ShouldUnitThreatStateBeSecret", token))
+    put("s.identity", call("C_Secrets.ShouldUnitIdentityBeSecret", token))
+    put("s.compare", call("C_Secrets.CanCompareUnitTokens", token, "target"))
+    -- Can a secret health value be handed to a status bar and a font string (display only)?
+    put("bar", Probe.DisplayTest(token))
     return u
+end
+
+local displayBar, displayText
+local function try(fn)
+    local ok, err = pcall(fn)
+    if ok then return "ok" end
+    return "ERROR:" .. ns.Compat.Describe(err)
+end
+
+function Probe.DisplayTest(token)
+    if not displayBar then
+        displayBar = CreateFrame("StatusBar", nil, UIParent)
+        displayBar:SetSize(100, 8)
+        displayBar:Hide()
+        displayText = displayBar:CreateFontString(nil, "OVERLAY")
+        displayText:SetFontObject(_G.GameFontHighlightSmall)
+    end
+    local hp, hpMax = _G.UnitHealth, _G.UnitHealthMax
+    return {
+        try(function() displayBar:SetMinMaxValues(0, hpMax(token)) end),
+        try(function() displayBar:SetValue(hp(token)) end),
+        try(function() displayText:SetText(hp(token)) end),
+    }
 end
 
 -- One snapshot of every hostile-looking unit token that exists right now.
@@ -236,6 +271,12 @@ custom["x:mark.test"] = function()
     local n = #state().marks
     if n == 0 then return "MANUAL", "not run yet: /ts probe mark" end
     return "INFO", n .. " mark tests saved (see 'mark tests' below)"
+end
+
+custom["x:secure.mark"] = function()
+    local n = #(state().secureMarks or {})
+    if n == 0 then return "MANUAL", "not run yet: /ts probe buttons, then click them with a mob targeted" end
+    return "INFO", n .. " secure button clicks saved (see 'secure button marks' below)"
 end
 
 custom["x:target.test"] = function()
@@ -377,7 +418,7 @@ function Probe.BuildReport()
     for _, check in ipairs(ns.ProbeChecks) do results[#results + 1] = runCheck(check) end
     local p = state()
     local lines = R.Build(currentMeta, results, {
-        combat = p.combat, marks = p.marks, targets = p.targets, events = Probe.events,
+        combat = p.combat, marks = p.marks, targets = p.targets, events = Probe.events, secureMarks = p.secureMarks,
     })
     currentMeta = nil
     return lines
@@ -458,7 +499,7 @@ end
 
 function Probe.Clear()
     local p = state()
-    p.combat, p.marks, p.targets, p.lastReport = {}, {}, {}, nil
+    p.combat, p.marks, p.targets, p.secureMarks, p.lastReport = {}, {}, {}, {}, nil
     ns.Log.Info(L.PROBE_CLEARED)
 end
 
@@ -512,6 +553,92 @@ function Probe.TargetTest()
     end)
 end
 
+-- /ts probe buttons: a small panel of SECURE buttons you click yourself. A click is a
+-- hardware event run by Blizzard's secure code, which is how the built-in "set skull"
+-- key binding works. This tests whether that path can place the skull when addon
+-- code calling SetRaidTarget cannot. Built and removed only out of combat.
+local panel
+local W = ns.Widgets
+
+local function tankUnit()
+    for _, u in ipairs(groupUnits()) do
+        if u ~= "player" and first("UnitGroupRolesAssigned", u) == '"TANK"' then return u end
+    end
+    return nil
+end
+
+local function secureButton(parent, label, attrs, unitForCheck)
+    local b = CreateFrame("Button", nil, parent, "SecureActionButtonTemplate")
+    b:SetSize(200, 22)
+    b:RegisterForClicks("AnyUp", "AnyDown")
+    for k, v in pairs(attrs) do b:SetAttribute(k, v) end
+    W.Background(b, "buttonBg")
+    W.Border(b, "buttonBorder", 1)
+    local text = W.Text(b, "small", "buttonText")
+    text:SetPoint("CENTER")
+    text:SetText(label)
+    b:SetScript("PreClick", function(self)
+        self.before = first("GetRaidTargetIndex", unitForCheck)
+        self.blockedBefore = Probe.blocked.count
+    end)
+    b:SetScript("PostClick", function(self, button, down)
+        local rec = { at = now(), kind = label, unit = unitForCheck, down = tostring(down), before = self.before }
+        groupFacts(rec)
+        local blockedBefore = self.blockedBefore or Probe.blocked.count
+        after(0.4, function()
+            rec.after = first("GetRaidTargetIndex", unitForCheck)
+            rec.blocked = Probe.blocked.count > blockedBefore and tostring(Probe.blocked.last) or "no"
+            local p = state()
+            p.secureMarks = p.secureMarks or {}
+            push(p.secureMarks, rec, MAX_TESTS * 2)
+            ns.Log.Info(L.PROBE_SECURE_RESULT, label, tostring(down), rec.before, rec.after, rec.blocked)
+        end)
+    end)
+    return b
+end
+
+function Probe.ToggleButtons()
+    if first("InCombatLockdown") == "true" then
+        ns.Log.Warn(L.PROBE_BUTTONS_COMBAT)
+        return
+    end
+    if panel then
+        panel:Hide()
+        panel = nil -- the old buttons stay hidden; a new panel is built next time
+        ns.Log.Info(L.PROBE_BUTTONS_OFF)
+        return
+    end
+    panel = CreateFrame("Frame", nil, UIParent)
+    panel:SetSize(224, 132)
+    panel:SetPoint("CENTER", 0, -160)
+    panel:SetMovable(true)
+    panel:EnableMouse(true)
+    panel:RegisterForDrag("LeftButton")
+    panel:SetScript("OnDragStart", panel.StartMoving)
+    panel:SetScript("OnDragStop", panel.StopMovingOrSizing)
+    W.Background(panel, "bg")
+    W.Border(panel, "border", 1)
+    local title = W.Text(panel, "small", "heading")
+    title:SetPoint("TOPLEFT", 12, -8)
+    title:SetText(L.PROBE_BUTTONS_TITLE)
+
+    local tank = tankUnit()
+    local rows = {
+        { L.PROBE_BTN_RAIDTARGET, { type = "raidtarget", action = "set", marker = 8, unit = "target" }, "target" },
+        { L.PROBE_BTN_MACRO, { type = "macro", macrotext = "/tm 8" }, "target" },
+    }
+    if tank then
+        rows[#rows + 1] = { L.PROBE_BTN_TANK, { type = "raidtarget", action = "set", marker = 8, unit = tank .. "target" },
+            tank .. "target" }
+    end
+    for i, row in ipairs(rows) do
+        local b = secureButton(panel, row[1], row[2], row[3])
+        b:SetPoint("TOP", 0, -28 - (i - 1) * 30)
+    end
+    panel:Show()
+    ns.Log.Info(L.PROBE_BUTTONS_ON)
+end
+
 -- /ts probe <sub>
 function Probe.Command(rest)
     local sub, arg = ns.util.splitCommand(rest)
@@ -523,6 +650,8 @@ function Probe.Command(rest)
         Probe.MarkTest(0)
     elseif sub == "target" then
         Probe.TargetTest()
+    elseif sub == "buttons" then
+        Probe.ToggleButtons()
     elseif sub == "combat" then
         local a = arg:lower()
         if a == "on" or a == "off" then

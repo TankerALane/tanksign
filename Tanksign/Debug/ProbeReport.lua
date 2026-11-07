@@ -168,6 +168,17 @@ function ProbeReport.Build(meta, results, extra)
         end
     end
 
+    add("-- secure button marks (clicked by hand)")
+    if not extra.secureMarks or #extra.secureMarks == 0 then
+        add("none yet: /ts probe buttons, target a mob, click each button (out of combat and in combat)")
+    else
+        for _, m in ipairs(extra.secureMarks) do
+            add(string.format("secure at=%s button=%s unit=%s down=%s before=%s after=%s combat=%s blocked=%s leader=%s",
+                tostring(m.at), tostring(m.kind), tostring(m.unit), tostring(m.down), tostring(m.before),
+                tostring(m.after), tostring(m.combat), tostring(m.blocked), tostring(m.leader)))
+        end
+    end
+
     add("-- target tests")
     if not extra.targets or #extra.targets == 0 then
         add("none yet: /ts probe target (once out of combat is enough)")

@@ -74,6 +74,11 @@ ns.ProbeChecks = {
     { id = "GetRaidTargetIndex", kind = "api", area = "Marking", why = "read the marker on a unit" },
     { id = "CanBeRaidTarget", kind = "api", area = "Marking", why = "optional: can this unit carry a marker" },
     { id = "ev:RAID_TARGET_UPDATE", kind = "event", area = "Marking", why = "a marker moved (detect manual marks)" },
+    { id = "x:secure.mark", kind = "custom", area = "Marking", why = "results of /ts probe buttons: can a secure button you click place the skull", test = "/ts probe buttons" },
+    { id = "C_Secrets.ShouldUnitHealthMaxBeSecret", kind = "api", area = "Secrets", why = "Blizzard's own answer: is this unit's health secret" },
+    { id = "C_Secrets.ShouldUnitThreatValuesBeSecret", kind = "api", area = "Secrets", why = "Blizzard's own answer: are threat values on this unit secret" },
+    { id = "C_Secrets.ShouldUnitThreatStateBeSecret", kind = "api", area = "Secrets", why = "Blizzard's own answer: is threat status on this unit secret" },
+    { id = "RegisterUnitWatch", kind = "api", area = "Targeting", why = "secure frames that show and hide with a unit, even in combat" },
     { id = "x:mark.test", kind = "custom", area = "Marking", why = "results of /ts probe mark (solo, party leader, party member, in combat)", test = "/ts probe mark" },
 
     -- Group, roles and permissions

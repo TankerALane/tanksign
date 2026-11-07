@@ -62,6 +62,16 @@ function M.new(opts)
     function Frame:Show() self._shown = true end
     function Frame:Hide() self._shown = false end
     function Frame:IsShown() return self._shown end
+    -- A hand click on a secure button: runs the raidtarget action like Blizzard's secure code.
+    function Frame:Click(button, down)
+        if self._scripts.PreClick then self._scripts.PreClick(self, button or "LeftButton", down) end
+        local a = self._attrs
+        if self._template == "SecureActionButtonTemplate" and a.type == "raidtarget" then
+            local x = ctl.units[a.unit]
+            if x then x.mark = a.marker end
+        end
+        if self._scripts.PostClick then self._scripts.PostClick(self, button or "LeftButton", down) end
+    end
     function Frame:GetVerticalScroll() return 0 end
     function Frame:GetVerticalScrollRange() return 0 end
 
@@ -69,6 +79,7 @@ function M.new(opts)
         if template == "SecureActionButtonTemplate" and ctl.combat then error("protected in combat") end
         local f = newFrame(kind)
         f._template = template
+        ctl.lastFrame = f
         if name then env[name] = f end
         return f
     end
@@ -146,7 +157,7 @@ function M.new(opts)
     env.UnitIsGroupLeader = function() return ctl.leader end
     env.UnitIsGroupAssistant = function() return ctl.assist end
     env.IsEveryoneAssistant = function() return false end
-    env.UnitGroupRolesAssigned = function() return "NONE" end
+    env.UnitGroupRolesAssigned = function(u) return (ctl.roles and ctl.roles[u]) or "NONE" end
     env.GetPartyAssignment = function() return false end
     env.InCombatLockdown = function() return ctl.combat end
 
