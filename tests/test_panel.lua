@@ -179,7 +179,7 @@ H.test("logout saves a session record for reading from SavedVariables", function
     ctl.slash("probe mark") -- no target: nothing blocked
     ctl.fire("PLAYER_LOGOUT")
     local s = env.TanksignDB.lastSession
-    H.eq(s.version, "0.9.0")
+    H.eq(s.version, "0.9.1")
     H.eq(s.tanks, "party1")
     H.eq(s.panelBuilt, true)
     H.eq(s.blocked, 0)

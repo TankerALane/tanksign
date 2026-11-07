@@ -6,7 +6,7 @@
 you, each with a live health bar, shows which ones the tank holds, and puts the skull on a mob with
 one click. It is an addon for World of Warcraft, built for **WoW Forever**.
 
-> **Status: 0.9.0 beta.** Everything below is confirmed in game on WoW Forever (open world and
+> **Status: 0.9.1 beta.** Everything below is confirmed in game on WoW Forever (open world and
 > dungeons, in combat). See [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## Screenshots

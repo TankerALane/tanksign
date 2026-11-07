@@ -2,7 +2,7 @@
 ## Title: Tanksign |cffff4040(unsupported client)|r
 ## Notes: Fallback file. WoW Forever loads Tanksign_Forever.toc instead.
 ## Author: Decoupled Lane Studio
-## Version: 0.9.0
+## Version: 0.9.1
 ## X-Flavor: Fallback
 ## X-License: MIT
 

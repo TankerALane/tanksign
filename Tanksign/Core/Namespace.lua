@@ -5,7 +5,7 @@
 local ADDON_NAME, ns = ...
 
 ns.ADDON_NAME = ADDON_NAME or "Tanksign"
-ns.VERSION = "0.9.0" -- overwritten at runtime from the TOC metadata when available
+ns.VERSION = "0.9.1" -- overwritten at runtime from the TOC metadata when available
 ns.AUTHOR = "Decoupled Lane Studio"
 ns.SUPPORT = "support@decoupledlane.com"
 

@@ -2,7 +2,7 @@
 
 All notable changes to Tanksign. Versions follow semantic versioning; 0.x releases are pre-releases.
 
-## Unreleased
+## 0.9.1 (beta): markers changed by other players
 
 - Markers changed by other players: when another player puts a marker on your skull or X mob, or
   removes one of yours, Tanksign now clears both icons instead of keeping a wrong one. Forever
