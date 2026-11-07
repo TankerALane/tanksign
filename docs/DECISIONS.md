@@ -101,3 +101,10 @@ row (also a `SecureHandlerStateTemplate`) receives `state-unitexists` while its 
 exists and passes it to the header, whose layout snippet stacks the rows. Cost: a row also shows
 for a friendly nameplate if friendly nameplates are turned on. `/ts diag` now tests condition
 variants to learn which part Forever rejects.
+
+Confirmed the same day: with unit watch the rows appear, stack and follow nameplates in combat, and
+left-clicks run in combat. `/ts diag` on a living enemy plate: `[@nameplate1]`=1,
+`[@nameplate1,nodead]`=1, but `[@nameplate1,exists]`=0 and `[@nameplate1,harm]`=0. Forever
+seems to refuse unit-identity conditions on nameplate tokens. Right-click (`type2=target`,
+unit `nameplateN`) reached the row ~20 times, nothing was blocked, and the target did not change.
+`/ts probe buttons` now tries `/target nameplate1`, `/target [@nameplate1]` and `/assist party1`.

@@ -567,7 +567,9 @@ local function tankUnit()
     return nil
 end
 
-local function secureButton(parent, label, attrs, unitForCheck)
+-- check: what to read before and after the click (default: the marker on unitForCheck).
+local function secureButton(parent, label, attrs, unitForCheck, check)
+    check = check or function() return first("GetRaidTargetIndex", unitForCheck) end
     local b = CreateFrame("Button", nil, parent, "SecureActionButtonTemplate")
     b:SetSize(200, 22)
     b:RegisterForClicks("AnyUp", "AnyDown")
@@ -578,7 +580,7 @@ local function secureButton(parent, label, attrs, unitForCheck)
     text:SetPoint("CENTER")
     text:SetText(label)
     b:SetScript("PreClick", function(self)
-        self.before = first("GetRaidTargetIndex", unitForCheck)
+        self.before = check()
         self.blockedBefore = Probe.blocked.count
     end)
     b:SetScript("PostClick", function(self, button, down)
@@ -586,7 +588,7 @@ local function secureButton(parent, label, attrs, unitForCheck)
         groupFacts(rec)
         local blockedBefore = self.blockedBefore or Probe.blocked.count
         after(0.4, function()
-            rec.after = first("GetRaidTargetIndex", unitForCheck)
+            rec.after = check()
             rec.blocked = Probe.blocked.count > blockedBefore and tostring(Probe.blocked.last) or "no"
             local p = state()
             p.secureMarks = p.secureMarks or {}
@@ -609,7 +611,7 @@ function Probe.ToggleButtons()
         return
     end
     panel = CreateFrame("Frame", nil, UIParent)
-    panel:SetSize(224, 132)
+    panel:SetSize(224, 222)
     panel:SetPoint("CENTER", 0, -160)
     panel:SetMovable(true)
     panel:EnableMouse(true)
@@ -631,8 +633,15 @@ function Probe.ToggleButtons()
         rows[#rows + 1] = { L.PROBE_BTN_TANK, { type = "raidtarget", action = "set", marker = 8, unit = tank .. "target" },
             tank .. "target" }
     end
+    -- Targeting through a nameplate token: the panel's right-click (type "target") does
+    -- nothing on Forever, so try the other secure ways. "after" = is nameplate1 your target.
+    local isTarget = function() return first("UnitIsUnit", "target", "nameplate1") end
+    rows[#rows + 1] = { L.PROBE_BTN_T_TYPE, { type = "target", unit = "nameplate1" }, "nameplate1", isTarget }
+    rows[#rows + 1] = { L.PROBE_BTN_T_SLASH, { type = "macro", macrotext = "/target nameplate1" }, "nameplate1", isTarget }
+    rows[#rows + 1] = { L.PROBE_BTN_T_COND, { type = "macro", macrotext = "/target [@nameplate1]" }, "nameplate1", isTarget }
+    rows[#rows + 1] = { L.PROBE_BTN_T_ASSIST, { type = "macro", macrotext = "/assist [@party1]" }, "nameplate1", isTarget }
     for i, row in ipairs(rows) do
-        local b = secureButton(panel, row[1], row[2], row[3])
+        local b = secureButton(panel, row[1], row[2], row[3], row[4])
         b:SetPoint("TOP", 0, -28 - (i - 1) * 30)
     end
     panel:Show()

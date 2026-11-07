@@ -178,7 +178,7 @@ H.test("secure skull buttons: built out of combat, clicks recorded, tank's targe
     for _, f in ipairs(ctl.frames) do
         if f._template == "SecureActionButtonTemplate" and f._attrs.type and f._parent ~= env.UIParent then buttons[#buttons + 1] = f end
     end
-    H.eq(#buttons, 3)
+    H.eq(#buttons, 7)
     H.eq(buttons[3]._attrs.unit, "party2target")
     buttons[1]:Click("LeftButton", true)
     ctl.advance(1)
