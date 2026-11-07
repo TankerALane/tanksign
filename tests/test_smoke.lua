@@ -210,3 +210,15 @@ H.test("unit samples include group threat, secrecy predicates and the display te
     H.ok(text:find("bar=ok,ok,ok", 1, true))
     H.ok(not text:find("touched a secret", 1, true))
 end)
+
+H.test("probe reports never contain other players' names or GUIDs", function()
+    local env, ctl = boot()
+    ctl.units.target = { name = "Somebody", guid = "Player-1-ABC", hostile = false }
+    local isPlayer = env.UnitIsPlayer
+    env.UnitIsPlayer = function(u) return u == "target" or isPlayer(u) end
+    ctl.slash("probe")
+    local text = table.concat(env.TanksignDB.probe.lastReport, "\n")
+    H.ok(not text:find("Somebody", 1, true), "name kept out")
+    H.ok(not text:find("Player-1-ABC", 1, true), "guid kept out")
+    H.ok(text:find('name=<player>', 1, true), text)
+end)

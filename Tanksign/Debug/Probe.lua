@@ -115,8 +115,14 @@ local function sampleUnit(token, members)
         u.order[#u.order + 1] = field
     end
     put("exists", call("UnitExists", token))
-    put("name", call("UnitName", token))
-    put("guid", call("UnitGUID", token))
+    -- Never store another player's name or GUID in a report that may be shared.
+    if first("UnitIsPlayer", token) == "true" then
+        put("name", { "<player>" })
+        put("guid", { "<player>" })
+    else
+        put("name", call("UnitName", token))
+        put("guid", call("UnitGUID", token))
+    end
     put("canAttack", call("UnitCanAttack", "player", token))
     put("dead", call("UnitIsDead", token))
     put("combat", call("UnitAffectingCombat", token))
