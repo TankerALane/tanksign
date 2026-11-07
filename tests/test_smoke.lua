@@ -239,6 +239,10 @@ H.test("mark recorder: counts a marked -> unmarked -> marked gap, not a seamless
     -- someone puts a moon on the X mob, seamlessly (no break)
     ctl.fire("RAID_TARGET_UPDATE")
     b.mark = 5; frameTick()
+    -- the skull mob is cleared, and marked again 4 seconds later: two events, not a gap
+    ctl.time = ctl.time + 3; ctl.fire("RAID_TARGET_UPDATE")
+    a.mark = nil; frameTick()
+    ctl.time = ctl.time + 4; a.mark = 8; ctl.fire("RAID_TARGET_UPDATE")
     ctl.slash("probe marks")
     H.ok(env.TanksignDB.probe.markWatchSummary:find("1 marked->unmarked->marked gaps", 1, true),
         env.TanksignDB.probe.markWatchSummary)

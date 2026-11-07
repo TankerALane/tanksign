@@ -25,7 +25,7 @@ local frame
 local running, startedAt, fastUntil = false, 0, 0
 local last = {}             -- token -> last status text
 local events = 0
-local noneBetweenMarked = 0 -- how often a token went hidden -> none -> hidden within FAST_FOR
+local noneBetweenMarked = 0 -- how often a token went hidden -> none -> hidden within FAST_FOR seconds
 
 local function now() return _G.GetTime() end
 
@@ -79,9 +79,13 @@ local function sample(reason)
             if exists or last[token] then
                 log(string.format("%s %s -> %s (%s)", token, tostring(last[token] or "new"), s, reason))
             end
+            -- A gap counts only when all three states fall inside one FAST_FOR window, so a
+            -- marker leaving after one click and coming back after a later click is not a gap.
             local h = history[token] or {}
-            h[#h + 1] = s
-            if #h >= 3 and h[#h] == "hidden" and h[#h - 1] == "none" and h[#h - 2] == "hidden" then
+            h[#h + 1] = { s = s, t = now() }
+            local n = #h
+            if n >= 3 and h[n].s == "hidden" and h[n - 1].s == "none" and h[n - 2].s == "hidden"
+                and h[n].t - h[n - 2].t <= FAST_FOR then
                 noneBetweenMarked = noneBetweenMarked + 1
                 log(token .. " GAP: marked -> unmarked -> marked (a swap shows a break)")
             end
