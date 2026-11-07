@@ -35,8 +35,10 @@ Forever client does not allow that, and Tanksign does not try to get around it:
   Both work in combat, and both markers can be changed in the options.
 - The skull or X you placed shows on that mob's row and above its nameplate. Forever hides a marked
   mob's marker from addons, so Tanksign shows only the markers **you** placed with it (rows, and the
-  mouseover key when it can tell the nameplate). Markers placed by other players are not shown; an
-  icon goes away when the mob turns out to be unmarked or its nameplate disappears.
+  mouseover key when it can tell the nameplate). Markers placed by other players are not shown.
+  If another player **removes** your marker, the icon goes away. If they **replace** it with a
+  different marker, Tanksign cannot tell and keeps showing yours until the mob is unmarked or its
+  nameplate disappears.
 - Bar colors: **green**, a tank holds it; **red**, in combat and no tank holds it (loose);
   **grey**, not pulled yet, or the client keeps the threat secret.
 - Tags before the name: **E** elite, **R** rare, **B** boss, **C** caster (uses mana).

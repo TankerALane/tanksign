@@ -69,7 +69,7 @@ WoW Forever hides enemy health and raid markers from addons, and does not let ad
 Known limits:
 - Mobs without a nameplate have no row. Keep enemy nameplates on.
 - Rows are not sorted by health, because addons cannot read it.
-- Markers placed by other players are not shown on rows or nameplates.
+- Markers placed by other players are not shown on rows or nameplates. If another player removes your marker, its icon goes away; if they replace it with a different marker, Tanksign cannot tell and keeps showing yours.
 - In a raid, only the leader and assistants can mark. The panel tells you when you can't.
 - The panel cannot be moved or hidden mid-fight. Turning Tanksign off in combat fades it, and it hides when the fight ends.
 

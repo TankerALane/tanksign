@@ -391,3 +391,22 @@ H.test("skull on top, cross on bottom, then skull on bottom: bottom keeps the sk
     H.eq(rows[1].mark._shown, false)
     H.eq(ctl.plates.nameplate2.tanksignMark._shown, true)
 end)
+
+H.test("someone else removes our marker: icon goes; someone else swaps it: icon stays (cannot tell)", function()
+    local _, ctl = boot()
+    local a, b = mob(ctl, "nameplate1"), mob(ctl, "nameplate2")
+    local rows = ctl.ns.Panel.rows
+    rows[1]:Click("LeftButton", false)
+    rows[2]:Click("RightButton", false)
+    ctl.time = ctl.time + 5
+    -- another player clears the skull: the unit reads as plain nil
+    a.mark = nil
+    ctl.fire("RAID_TARGET_UPDATE")
+    H.eq(rows[1].mark._shown, false, "removed by someone else: icon gone")
+    H.eq(ctl.plates.nameplate1.tanksignMark._shown, false)
+    -- another player changes our cross to a moon: the unit still reads as marked (secret)
+    b.mark = 5
+    ctl.fire("RAID_TARGET_UPDATE")
+    H.eq(ctl.ns.Marks.Get("nameplate2"), 7, "changed by someone else: we cannot tell, cross stays")
+    H.eq(rows[2].mark._shown, true)
+end)
