@@ -392,21 +392,93 @@ H.test("skull on top, cross on bottom, then skull on bottom: bottom keeps the sk
     H.eq(ctl.plates.nameplate2.tanksignMark._shown, true)
 end)
 
-H.test("someone else removes our marker: icon goes; someone else swaps it: icon stays (cannot tell)", function()
+-- Our clicks fire RAID_TARGET_UPDATE in the game (recorder, 2026-11-07); the mock does not,
+-- so these tests fire it after each click, then let the panel's timer run.
+local function clickAndEvent(ctl, row, button)
+    row:Click(button, false)
+    ctl.fire("RAID_TARGET_UPDATE")
+end
+
+local function settle(ctl)
+    local f = eventFrameFor(ctl, "RAID_TARGET_UPDATE")
+    ctl.time = ctl.time + 2
+    f._scripts.OnUpdate(f, 0.3)
+end
+
+local function skullAndX()
     local _, ctl = boot()
-    local a, b = mob(ctl, "nameplate1"), mob(ctl, "nameplate2")
+    local a, b, c = mob(ctl, "nameplate1"), mob(ctl, "nameplate2"), mob(ctl, "nameplate3")
     local rows = ctl.ns.Panel.rows
-    rows[1]:Click("LeftButton", false)
-    rows[2]:Click("RightButton", false)
+    ctl.fire("RAID_TARGET_UPDATE") -- the first look at the plates
+    settle(ctl)
+    clickAndEvent(ctl, rows[1], "LeftButton")
+    clickAndEvent(ctl, rows[2], "RightButton")
+    settle(ctl)
+    H.eq(ctl.ns.Marks.Get("nameplate1"), 8, "our own clicks never clear")
+    H.eq(ctl.ns.Marks.Get("nameplate2"), 7)
     ctl.time = ctl.time + 5
-    -- another player clears the skull: the unit reads as plain nil
+    return ctl, rows, a, b, c
+end
+
+H.test("someone else removes our skull: icon goes (seen as a loss, so the X goes too)", function()
+    local ctl, rows, a = skullAndX()
     a.mark = nil
     ctl.fire("RAID_TARGET_UPDATE")
     H.eq(rows[1].mark._shown, false, "removed by someone else: icon gone")
     H.eq(ctl.plates.nameplate1.tanksignMark._shown, false)
-    -- another player changes our cross to a moon: the unit still reads as marked (secret)
-    b.mark = 5
+    settle(ctl)
+    H.eq(ctl.ns.Marks.Get("nameplate2"), nil, "cannot tell a removal from a move onto a marked mob")
+end)
+
+H.test("someone puts a square on our skull: skull and X icons both go (cannot tell which mob)", function()
+    local ctl, rows, a = skullAndX()
+    a.mark = 6 -- still reads marked: nothing visible changes
     ctl.fire("RAID_TARGET_UPDATE")
-    H.eq(ctl.ns.Marks.Get("nameplate2"), 7, "changed by someone else: we cannot tell, cross stays")
-    H.eq(rows[2].mark._shown, true)
+    H.eq(ctl.ns.Marks.Get("nameplate1"), 8, "judged a moment later, not at once")
+    settle(ctl)
+    H.eq(ctl.ns.Marks.Get("nameplate1"), nil)
+    H.eq(ctl.ns.Marks.Get("nameplate2"), nil)
+    H.eq(rows[1].mark._shown, false)
+    H.eq(rows[2].mark._shown, false)
+    H.eq(ctl.plates.nameplate1.tanksignMark._shown, false)
+    H.eq(ctl.plates.nameplate2.tanksignMark._shown, false)
+end)
+
+H.test("someone puts our X on our skull mob: both icons go", function()
+    local ctl, rows, a, b = skullAndX()
+    b.mark = nil
+    a.mark = 7
+    ctl.fire("RAID_TARGET_UPDATE")
+    settle(ctl)
+    H.eq(ctl.ns.Marks.Get("nameplate1"), nil)
+    H.eq(ctl.ns.Marks.Get("nameplate2"), nil)
+    H.eq(rows[1].mark._shown, false)
+end)
+
+H.test("someone marks a fresh mob, or moves our X to one: our skull stays", function()
+    local ctl, rows, a, b, c = skullAndX()
+    c.mark = 2 -- a circle on the third mob
+    ctl.fire("RAID_TARGET_UPDATE")
+    settle(ctl)
+    H.eq(ctl.ns.Marks.Get("nameplate1"), 8)
+    H.eq(ctl.ns.Marks.Get("nameplate2"), 7)
+    b.mark = nil; c.mark = 7 -- our X moves from the second mob to the third (it had the circle: not seen)
+    ctl.fire("RAID_TARGET_UPDATE")
+    settle(ctl)
+    H.eq(ctl.ns.Marks.Get("nameplate1"), nil, "a loss and no gain: cannot tell, cleared")
+    -- start again: X moves to an unmarked mob, which is explained
+    clickAndEvent(ctl, rows[1], "LeftButton")
+    clickAndEvent(ctl, rows[2], "RightButton")
+    settle(ctl)
+    c.mark = nil; ctl.fire("RAID_TARGET_UPDATE"); settle(ctl) -- circle cleared: a loss
+    clickAndEvent(ctl, rows[1], "LeftButton")
+    clickAndEvent(ctl, rows[2], "RightButton")
+    settle(ctl)
+    ctl.time = ctl.time + 5
+    b.mark = nil; c.mark = 7
+    ctl.fire("RAID_TARGET_UPDATE")
+    settle(ctl)
+    H.eq(ctl.ns.Marks.Get("nameplate1"), 8, "the X went to an unmarked mob: the skull is untouched")
+    H.eq(rows[1].mark._shown, true)
+    H.eq(ctl.ns.Marks.Get("nameplate2"), nil, "our X mob reads unmarked")
 end)

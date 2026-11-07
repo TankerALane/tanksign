@@ -3,7 +3,8 @@
 -- nameplate. Forever hides a marked unit's marker from addons (GetRaidTargetIndex is
 -- secret once set), so Tanksign remembers its own clicks (Core/MarkLogic.lua) and only
 -- uses what the client still shows: an unmarked unit reads as plain nil, which clears
--- the memory. Markers placed by other players cannot be shown.
+-- the memory. Markers placed by other players cannot be shown. When a marker changes and
+-- no Tanksign click explains it, the skull and X are forgotten (MarkLogic.ShouldForget).
 --
 -- Nameplate icons are plain textures parented to the nameplate. If the client refuses
 -- (forbidden nameplates), the feature turns itself off once, with a message.
@@ -17,6 +18,9 @@ ns.Marks = Marks
 local state = ns.MarkLogic.New()
 Marks.state = state
 local plateIcons = {} -- token -> texture shown on that token's nameplate
+local seen = {}       -- token -> "none" | "marked": every nameplate, as of the last look
+local check           -- marker events not judged yet (see MarkLogic.ShouldForget)
+local lastClickAt     -- GetTime() of the last Tanksign marking click or key
 
 -- Blizzard's raid marker icons (1 star ... 7 cross, 8 skull).
 function Marks.Icon(marker)
@@ -67,6 +71,55 @@ local function refreshAll()
     for token in pairs(state.byToken) do refreshPlate(token) end
 end
 
+local function plateStatus(token)
+    local ok, v = pcall(_G.GetRaidTargetIndex, token)
+    if not ok then return nil end
+    if Compat.IsSecret(v) or type(v) == "number" then return "marked" end
+    if v == nil then return "none" end
+    return nil
+end
+
+local function look()
+    local now = {}
+    for i = 1, 40 do
+        local token = "nameplate" .. i
+        if Compat.Plain(_G.UnitExists(token)) == true then now[token] = plateStatus(token) end
+    end
+    return now
+end
+
+-- A Tanksign marking click or key press happened (whether or not we know the token).
+function Marks.Clicked()
+    lastClickAt = _G.GetTime()
+end
+
+-- RAID_TARGET_UPDATE: note what changed; judged a moment later by Marks.Tick.
+function Marks.MarkerEvent()
+    if type(_G.GetRaidTargetIndex) ~= "function" then return end
+    local after = look()
+    local gains, losses = ns.MarkLogic.Diff(seen, after)
+    seen = after
+    local t = _G.GetTime()
+    if check then
+        check.lastAt, check.gains, check.losses = t, check.gains + gains, check.losses + losses
+    else
+        check = { firstAt = t, lastAt = t, gains = gains, losses = losses }
+    end
+end
+
+function Marks.Tick()
+    if not check or _G.GetTime() - check.lastAt < ns.MarkLogic.SETTLE then return end
+    local c = check
+    check = nil
+    if not ns.MarkLogic.HasAny(state) or not ns.MarkLogic.ShouldForget(c, lastClickAt) then return end
+    ns.MarkLogic.Forget(state)
+    ns.Log.Debug("someone else changed a marker (%d gained, %d lost on nameplates); skull and X icons cleared",
+        c.gains, c.losses)
+    if ns.MarkWatch then ns.MarkWatch.Note("TANKSIGN forgot its markers (unexplained marker change)") end
+    refreshAll()
+    if ns.Panel then ns.Panel.UpdateAll() end
+end
+
 function Marks.Placed(marker, token)
     ns.MarkLogic.Place(state, marker, token, _G.GetTime())
     ns.Log.Debug("marker %d placed on %s (remembered)", marker, token)
@@ -76,6 +129,7 @@ function Marks.Placed(marker, token)
 end
 
 function Marks.Removed(token)
+    seen[token] = nil
     ns.MarkLogic.Removed(state, token)
     hidePlateIcon(token)
 end
@@ -83,6 +137,7 @@ end
 -- A plate frame was (re)used for a new unit: clear any icon left on it.
 function Marks.PlateAdded(token)
     hidePlateIcon(token)
+    if type(_G.GetRaidTargetIndex) == "function" then seen[token] = plateStatus(token) end
     local get = Compat.Resolve("C_NamePlate.GetNamePlateForUnit")
     if type(get) == "function" then
         local ok, plate = pcall(get, token)

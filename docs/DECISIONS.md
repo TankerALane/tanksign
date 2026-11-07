@@ -155,3 +155,20 @@ players, and by the tank's-target key, are not shown.
 Confirmed in game by Austin (2026-11-07): right-click cross, and skull/X icons on rows and
 nameplates, including moving the skull onto the X-marked mob (after the time-only grace fix).
 Options page confirmed working in game by Austin (2026-11-07).
+
+## D-014 Markers changed by others: forget both icons when a change cannot be explained (2026-11-07)
+
+Austin asked that a skull or X replaced by another player stop showing (X on the skull mob: clear
+both; another marker on the skull mob: clear only the skull). The recorder (`/ts probe marks`,
+`docs/verify-reports/forever-2026-11-07-markwatch1.txt`) showed that a replaced marker leaves no
+trace: the mob reads as marked (secret) before, during and after, sampled every frame for 2 s, and
+Blizzard's own nameplate raid icon is just as hidden (texture coordinates secret when marked).
+What an addon does get is `RAID_TARGET_UPDATE` and, per nameplate, unmarked/marked.
+Rule (MarkLogic.ShouldForget): gather the events, wait 0.5 s, and unless a Tanksign click or key
+press happened within 1 s, count nameplates that went unmarked->marked (gains) and marked->unmarked
+(losses). Nothing visible changed, or more losses than gains, means a marker changed on an already
+marked mob (or one without a nameplate) or was removed; Tanksign cannot tell which, so it forgets
+both its skull and X. Austin chose this over keeping a possibly wrong icon (2026-11-07). The split
+he asked for (square on skull: only the skull) is not possible, because the game does not say
+which marked mob changed. Costs: removing just one of your markers, or someone marking a mob with
+no nameplate on your screen, also clears both icons; one click restores them.

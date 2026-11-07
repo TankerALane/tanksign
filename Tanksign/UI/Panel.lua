@@ -146,6 +146,7 @@ local function buildRow(i)
     -- Runs after Blizzard's secure click handler; only logs, never acts.
     row:SetScript("PostClick", function(self, button, down)
         if down then return end
+        if button == "LeftButton" or button == "RightButton" then ns.Marks.Clicked() end
         ns.Log.Debug("row %s %s-click (in combat %s)", self.token, button == "LeftButton" and "left" or tostring(button),
             tostring(Compat.InCombat()))
         if (button == "LeftButton" or button == "RightButton") and ns.Alerts then
@@ -338,6 +339,7 @@ local function onEvent(_, event, unit)
         return
     end
     if event == "NAME_PLATE_UNIT_ADDED" then ns.Marks.PlateAdded(unit) end
+    if event == "RAID_TARGET_UPDATE" then ns.Marks.MarkerEvent() end
     if event == "UNIT_HEALTH" or event == "UNIT_MAXHEALTH" or event == "NAME_PLATE_UNIT_ADDED" then
         Panel.UpdateToken(unit)
     else
@@ -349,6 +351,7 @@ local function onUpdate(_, dt)
     elapsed = elapsed + dt
     if elapsed < UPDATE_EVERY then return end
     elapsed = 0
+    ns.Marks.Tick()
     Panel.UpdateAll()
 end
 

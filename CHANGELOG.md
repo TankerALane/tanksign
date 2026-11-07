@@ -2,6 +2,15 @@
 
 All notable changes to Tanksign. Versions follow semantic versioning; 0.x releases are pre-releases.
 
+## Unreleased
+
+- Markers changed by other players: when another player puts a marker on your skull or X mob, or
+  removes one of yours, Tanksign now clears both icons instead of keeping a wrong one. Forever
+  shows no break when a marker is replaced (the mob reads as marked the whole time), so Tanksign
+  cannot tell which of your mobs was hit; it judges each marker change against your own clicks
+  and which nameplates changed. Markers placed on unmarked mobs leave your icons alone.
+- `/ts probe marks`: a recorder for how marker changes look to addons (used to find the above).
+
 ## 0.9.0 (beta): first public release
 
 The first public beta for WoW Forever. Everything from the development builds below, confirmed in

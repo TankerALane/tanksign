@@ -70,3 +70,51 @@ end
 function MarkLogic.Get(state, token)
     return state.byToken[token]
 end
+
+function MarkLogic.HasAny(state)
+    return next(state.byToken) ~= nil
+end
+
+function MarkLogic.Forget(state)
+    state.byToken, state.byMarker, state.pending = {}, {}, {}
+end
+
+----------------------------------------------------------------------------
+-- Changes made by someone else (D-014). The recorder (/ts probe marks, 2026-11-07) showed
+-- that a mob whose marker is REPLACED reads "marked" the whole time, with no break. What
+-- an addon does get: a RAID_TARGET_UPDATE event, and which nameplates went from unmarked
+-- to marked (a gain) or marked to unmarked (a loss). A marker is on one unit at a time,
+-- so when no Tanksign click explains the event:
+--   * nothing visible changed: a marker changed on a mob that already had one (or on a
+--     mob without a nameplate). It may be your skull or X mob; we cannot tell which.
+--   * more losses than gains: a marker left a mob and went nowhere visible: it was
+--     removed, or moved onto a marked mob (your X onto your skull mob). Cannot tell.
+-- In both cases Tanksign forgets its skull and X rather than show a wrong icon.
+
+MarkLogic.CLICK_WINDOW = 1.0 -- an event this close to a Tanksign click is that click
+MarkLogic.SETTLE = 0.5       -- wait this long after the last event before judging
+
+-- before/after: token -> "none" | "marked". Only tokens in both count.
+function MarkLogic.Diff(before, after)
+    local gains, losses = 0, 0
+    for token, now in pairs(after) do
+        local was = before[token]
+        if was == "none" and now == "marked" then gains = gains + 1 end
+        if was == "marked" and now == "none" then losses = losses + 1 end
+    end
+    return gains, losses
+end
+
+function MarkLogic.Unexplained(gains, losses)
+    return losses > gains or (gains == 0 and losses == 0)
+end
+
+-- check = { firstAt, lastAt, gains, losses } gathered over a burst of events.
+-- Returns true when the burst should make Tanksign forget its markers.
+function MarkLogic.ShouldForget(check, lastClickAt)
+    if lastClickAt and lastClickAt >= check.firstAt - MarkLogic.CLICK_WINDOW
+        and lastClickAt <= check.lastAt + MarkLogic.CLICK_WINDOW then
+        return false -- our own click
+    end
+    return MarkLogic.Unexplained(check.gains, check.losses)
+end

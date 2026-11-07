@@ -167,6 +167,33 @@ H.test("profiles: create copies, switch, cycle, delete rules, auto choice, reset
     H.eq(db.profile, "Default")
 end)
 
+H.test("someone else's marker change: forget when it cannot be explained", function()
+    local M = H.pureNamespace().MarkLogic
+    -- square on your skull mob: nothing visible changes
+    H.eq(M.Unexplained(M.Diff({ nameplate1 = "marked", nameplate2 = "marked" },
+        { nameplate1 = "marked", nameplate2 = "marked" })), true)
+    -- your X moved onto your skull mob: the X mob reads unmarked, nothing new is marked
+    local g, l = M.Diff({ nameplate1 = "marked", nameplate2 = "marked" }, { nameplate1 = "marked", nameplate2 = "none" })
+    H.eq(g, 0); H.eq(l, 1); H.eq(M.Unexplained(g, l), true)
+    -- a marker moved to an unmarked mob, or a new marker on an unmarked mob: explained
+    H.eq(M.Unexplained(M.Diff({ nameplate1 = "marked", nameplate3 = "none" },
+        { nameplate1 = "none", nameplate3 = "marked" })), false)
+    H.eq(M.Unexplained(M.Diff({ nameplate3 = "none" }, { nameplate3 = "marked" })), false)
+    -- plates that came or went are not counted
+    H.eq(select(2, M.Diff({ nameplate9 = "marked" }, {})), 0)
+    -- our own click, just before or just after the event, explains it
+    local c = { firstAt = 10, lastAt = 10.1, gains = 0, losses = 0 }
+    H.eq(M.ShouldForget(c, 10.08), false)
+    H.eq(M.ShouldForget(c, 9.5), false)
+    H.eq(M.ShouldForget(c, 5), true)
+    H.eq(M.ShouldForget(c, nil), true)
+    local s = M.New()
+    M.Place(s, 8, "nameplate1"); M.Place(s, 7, "nameplate2")
+    H.eq(M.HasAny(s), true)
+    M.Forget(s)
+    H.eq(M.HasAny(s), false); H.eq(M.Get(s, "nameplate1"), nil); H.eq(s.byMarker[7], nil)
+end)
+
 H.test("marking rights: party yes, raid only leader or assistant", function()
     local A = H.pureNamespace().ActiveLogic
     H.eq(A.CanMark({ inRaid = false, leader = false }), true)

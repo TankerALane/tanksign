@@ -32,6 +32,7 @@ local function makeButton(name, unit)
     if unit then b:SetAttribute("unit", unit) end
     b:SetScript("PostClick", function(self, _, down)
         if down then return end
+        ns.Marks.Clicked()
         local u = self:GetAttribute("unit")
         ns.Log.Debug("key %s pressed (unit %s, in combat %s)", tostring(name), tostring(u), tostring(Compat.InCombat()))
         if u and ns.Alerts.OnMark(u, ns.db.settings.marker) then
