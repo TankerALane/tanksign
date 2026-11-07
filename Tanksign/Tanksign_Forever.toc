@@ -1,0 +1,26 @@
+## Interface: 16001
+## Title: Tanksign
+## Notes: Puts a skull on the lowest-health mob your tank is holding. Support: support@decoupledlane.com
+## Author: Decoupled Lane Studio
+## Version: 0.1.0
+## IconTexture: Interface\AddOns\Tanksign\media\icon
+## SavedVariables: TanksignDB
+## X-Flavor: Forever
+## X-License: MIT
+## X-Email: support@decoupledlane.com
+## X-Copyright: Copyright (c) 2026 Decoupled Lane Studio
+
+# Load order matters: Namespace first, Init last.
+# Files listed in tests/harness.lua PURE_FILES must not touch WoW globals at load time.
+Core\Namespace.lua
+Locale\enUS.lua
+Compat\FlavorLogic.lua
+UI\Palette.lua
+Debug\ProbeChecks.lua
+Debug\ProbeReport.lua
+Core\Log.lua
+Compat\Compat.lua
+UI\Widgets.lua
+Debug\CopyWindow.lua
+Debug\Probe.lua
+Core\Init.lua

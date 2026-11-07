@@ -1,0 +1,18 @@
+# Tanksign does NOT use the BigWigs packager.
+#
+# The packager names the package from a TOC in the repository root, and this repo
+# keeps the addon in Tanksign/. Releases are built by tools/build_release.py instead,
+# run by .github/workflows/release.yml on a version tag (docs/DECISIONS.md D-003).
+#
+# This file is kept so packager-based tooling that looks for it finds an answer.
+# If the repo is ever flattened, these settings would package it correctly:
+package-as: Tanksign
+
+ignore:
+  - assets
+  - docs
+  - tests
+  - tools
+  - dist
+  - .github
+  - CLAUDE.md

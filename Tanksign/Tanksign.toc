@@ -1,0 +1,13 @@
+## Interface: 00000
+## Title: Tanksign |cffff4040(unsupported client)|r
+## Notes: Fallback file. WoW Forever loads Tanksign_Forever.toc instead.
+## Author: Decoupled Lane Studio
+## Version: 0.1.0
+## X-Flavor: Fallback
+## X-License: MIT
+
+# This generic TOC only loads when the client did not pick a flavor-specific TOC.
+# It loads nothing but a message, so the addon never runs on an unknown client.
+Core\Namespace.lua
+Locale\enUS.lua
+Compat\Unsupported.lua
