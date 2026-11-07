@@ -2,7 +2,14 @@
 
 All notable changes to Tanksign. Versions follow semantic versioning; 0.x releases are pre-releases.
 
-## 0.5.0 (unreleased): right-click cross and marker icons
+## 0.9.0 (beta): first public release
+
+The first public beta for WoW Forever. Everything from the development builds below, confirmed in
+game: the mob panel with live health bars, left-click skull and right-click cross, marker icons on
+rows and nameplates, tank detection and held/loose colors, tags, key bindings, the options page,
+and profiles.
+
+## 0.5.0: right-click cross and marker icons
 
 - Right-click a row puts the cross (red X) on that mob; left-click still puts the skull. Both
   markers are settings (`/ts marker`, `/ts rightmarker`, options page).
@@ -14,7 +21,7 @@ All notable changes to Tanksign. Versions follow semantic versioning; 0.x releas
   marker a moment later and the unit still read as unmarked. A fresh mark now has a 3-second grace
   time, and Tanksign re-checks on RAID_TARGET_UPDATE.
 
-## 0.4.0 (unreleased): stage 5, options and profiles
+## 0.4.0: stage 5, options and profiles
 
 - Options page (Esc > Options > AddOns > Tanksign, or `/ts options`) in the Plain palette, with the
   sections Core, Choosing the mob, Marking, Panel, Alerts, Key bindings, Profiles and Other. It
@@ -27,7 +34,7 @@ All notable changes to Tanksign. Versions follow semantic versioning; 0.x releas
 - Not possible on Forever and explained on the options page: clearing the skull, a "skull moved"
   alert, and a glow on the marked nameplate (addons cannot see or remove markers).
 
-## 0.3.0 (unreleased): stage 3, row details
+## 0.3.0: stage 3, row details
 
 - Row tags: E elite, R rare, B boss, C caster (uses mana). `/ts tags` toggles them.
 - Critters, totems and pets are dimmed (`/ts dim`). Uses creature type ids, so it works on any
@@ -35,7 +42,7 @@ All notable changes to Tanksign. Versions follow semantic versioning; 0.x releas
 - Not possible on Forever and left out: ignoring mobs below a health threshold (health is secret)
   and counting mobs within 90% of top threat (threat values are secret on nameplates).
 
-## 0.2.0 (unreleased): stage 2, the mob panel
+## 0.2.0: stage 2, the mob panel
 
 Forever does not let addons read enemy health or place markers, so Tanksign is now a click-to-mark
 panel (docs/DECISIONS.md D-006 to D-008).
@@ -54,7 +61,7 @@ panel (docs/DECISIONS.md D-006 to D-008).
   keys confirmed in game).
 - Commands: status, show, hide, lock, unlock, tank, source, marker, rows, scale, group, reset, debug.
 
-## 0.1.0 (unreleased): stage 1, probe build
+## 0.1.0: stage 1, probe build
 
 - Repository skeleton, MIT license, Forever TOC (interface 16001) and a fallback TOC that only prints "unsupported client".
 - `/ts probe`: checks every API and event Tanksign plans to use, samples which unit values (health, threat, markers, GUIDs) are readable or secret, in and out of combat, and saves the report in SavedVariables.

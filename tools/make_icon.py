@@ -52,13 +52,17 @@ def ellipse(px, py, cx, cy, rx, ry):
 
 
 def shield(px, py):
-    # Upper rounded rectangle joined to a pointed lower half, centred behind the skull.
-    top = rounded_box(px, py, 0.5, 0.36, 0.30, 0.16, 0.05)
-    # Lower part: intersection of two big circles makes the point.
-    left = circle(px, py, 0.80, 0.40, 0.48)
-    right = circle(px, py, 0.20, 0.40, 0.48)
-    lower = max(left, right, -(py - 0.36))
-    return min(top, lower)
+    # A heater shield behind the skull: straight top with rounded corners, sides that
+    # curve in to a point. The two circles meet exactly at the point (0.5, BOTTOM).
+    half_w, top, waist, bottom = 0.33, 0.12, 0.40, 0.78
+    upper = rounded_box(px, py, 0.5, (top + waist) / 2 + 0.02, half_w, (waist - top) / 2 + 0.02, 0.05)
+    drop = bottom - waist
+    d = (drop * drop - half_w * half_w) / (2 * half_w)  # circle centre offset from the middle
+    r = half_w + d
+    right_side = circle(px, py, 0.5 - d, waist, r)  # circle left of centre bounds the right edge
+    left_side = circle(px, py, 0.5 + d, waist, r)
+    lower = max(right_side, left_side, waist - py)
+    return min(upper, lower)
 
 
 def skull(px, py):

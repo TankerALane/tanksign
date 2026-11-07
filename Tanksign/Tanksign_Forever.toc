@@ -2,11 +2,12 @@
 ## Title: Tanksign
 ## Notes: A click-to-skull panel of the mobs your tank is holding, with live health bars. Support: support@decoupledlane.com
 ## Author: Decoupled Lane Studio
-## Version: 0.5.0
+## Version: 0.9.0
 ## IconTexture: Interface\AddOns\Tanksign\media\icon
 ## SavedVariables: TanksignDB
 ## X-Flavor: Forever
 ## X-License: MIT
+## X-Curse-Project-ID: 1788836
 ## X-Website: https://github.com/TankerALane/tanksign
 ## X-Email: support@decoupledlane.com
 ## X-Copyright: Copyright (c) 2026 Decoupled Lane Studio

@@ -26,6 +26,7 @@ H.test("Forever TOC fields", function()
     H.eq(f.SavedVariables, "TanksignDB")
     H.eq(f["X-License"], "MIT")
     H.ok(f.Notes and f.Notes:find("support@decoupledlane.com", 1, true), "support email in Notes")
+    H.eq(f["X-Curse-Project-ID"], "1788836")
 end)
 
 H.test("fallback TOC never loads the addon", function()

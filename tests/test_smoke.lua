@@ -20,7 +20,7 @@ end
 
 H.test("loads on Forever, creates only the allowed globals", function()
     local env, ctl = boot()
-    H.ok(ctl.chatText():find("v0.5.0 loaded", 1, true), ctl.chatText())
+    H.ok(ctl.chatText():find("v0.9.0 loaded", 1, true), ctl.chatText())
     H.eq(type(env.TanksignDB), "table")
     H.eq(env.TanksignDB.profiles.Default.enabled, true)
     H.eq(table.concat(ctl.newGlobals(), ","), table.concat({ "BINDING_HEADER_TANKSIGN",
