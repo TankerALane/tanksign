@@ -118,6 +118,12 @@ local function buildRow(i)
         W.Tooltip(self, L.ADDON_TITLE, { L.ROW_TIP_LEFT, L.ROW_TIP_RIGHT })
     end)
     row:SetScript("OnLeave", W.HideTooltip)
+    -- Runs after Blizzard's secure click handler; only logs, never acts.
+    row:SetScript("PostClick", function(self, button, down)
+        if down then return end
+        ns.Log.Debug("row %s %s-click (in combat %s)", self.token, button == "RightButton" and "right" or "left",
+            tostring(Compat.InCombat()))
+    end)
 
     header:SetFrameRef("row" .. i, row)
     _G.RegisterStateDriver(header, "np" .. i, "[@" .. token .. ",harm,nodead] 1; 0")
@@ -227,6 +233,15 @@ function Panel.UpdateAll()
         end
     end
     emptyText:SetShown(not any)
+    -- How many rows the secure layout shows: the check that the restricted snippet works.
+    local visible = 0
+    for _, row in ipairs(rows) do if row:IsShown() then visible = visible + 1 end end
+    local plates = 0
+    for _, row in ipairs(rows) do if Compat.Plain(_G.UnitExists(row.token)) == true then plates = plates + 1 end end
+    if visible ~= Panel.lastVisible or plates ~= Panel.lastPlates then
+        ns.Log.Debug("panel: %d rows shown, %d nameplate tokens exist", visible, plates)
+        Panel.lastVisible, Panel.lastPlates = visible, plates
+    end
 end
 
 function Panel.UpdateToken(unit)

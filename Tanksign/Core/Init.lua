@@ -155,13 +155,37 @@ frame:SetScript("OnEvent", function(self, event, name)
         self:RegisterEvent("GROUP_ROSTER_UPDATE")
         self:RegisterEvent("PLAYER_ROLES_ASSIGNED")
         self:RegisterEvent("PLAYER_ENTERING_WORLD")
+        self:RegisterEvent("PLAYER_LOGOUT")
         self:UnregisterEvent("PLAYER_LOGIN")
         ns.Log.Info(L.LOADED, ns.VERSION)
+    elseif event == "PLAYER_LOGOUT" then
+        Init.SaveSession()
     else
         ns.Roster.Update()
         ns.State.Refresh()
     end
 end)
+
+-- Written on /reload or logout, so a test session can be read from SavedVariables:
+-- the last debug lines (kept even with debug printing off), actions Blizzard blocked
+-- for Tanksign, and features turned off because an API failed.
+function Init.SaveSession()
+    local lines = {}
+    for i, l in ipairs(ns.Log.recent) do lines[i] = l end
+    local disabled = {}
+    for feature, why in pairs(ns.Compat.disabled) do disabled[#disabled + 1] = feature .. ": " .. tostring(why) end
+    ns.db.lastSession = {
+        version = ns.VERSION,
+        saved = type(_G.date) == "function" and _G.date("%Y-%m-%d %H:%M:%S") or "?",
+        debugLog = lines,
+        blocked = ns.Probe.blocked.count,
+        lastBlocked = ns.Probe.blocked.last,
+        disabled = disabled,
+        tanks = table.concat(ns.Roster.tanks, ","),
+        tankSource = ns.Roster.source,
+        panelBuilt = ns.Panel.IsBuilt(),
+    }
+end
 
 _G.SLASH_TANKSIGN1 = "/tanksign"
 _G.SLASH_TANKSIGN2 = "/ts"

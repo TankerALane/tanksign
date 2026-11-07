@@ -166,3 +166,18 @@ H.test("status, tank name, rows, scale, reset commands", function()
     H.eq(env.TanksignDB.settings.tankSource, "auto")
     H.eq(env.TanksignDB.settings.maxRows, 8)
 end)
+
+H.test("logout saves a session record for reading from SavedVariables", function()
+    local env, ctl = boot(function(_, c) party(c, "party1") end)
+    mob(ctl, "nameplate1", { threatBy = { party1 = 3 } })
+    ctl.fire("UNIT_THREAT_LIST_UPDATE", "nameplate1")
+    ctl.slash("probe mark") -- no target: nothing blocked
+    ctl.fire("PLAYER_LOGOUT")
+    local s = env.TanksignDB.lastSession
+    H.eq(s.version, "0.2.0")
+    H.eq(s.tanks, "party1")
+    H.eq(s.panelBuilt, true)
+    H.eq(s.blocked, 0)
+    local text = table.concat(s.debugLog, "\n")
+    H.ok(text:find("nameplate1 Razormane Thornweaver: held by a tank", 1, true), text)
+end)

@@ -12,7 +12,7 @@ end
 
 -- Recent debug lines, kept even when debug printing is off.
 Log.recent = {}
-local RECENT_MAX = 200
+local RECENT_MAX = 400
 
 local function out(text)
     local frame = _G.DEFAULT_CHAT_FRAME
@@ -42,6 +42,8 @@ end
 
 function Log.Debug(fmt, ...)
     local text = format(fmt, ...)
+    local clock = _G.date
+    if type(clock) == "function" then text = clock("%H:%M:%S ") .. text end
     local recent = Log.recent
     recent[#recent + 1] = text
     if #recent > RECENT_MAX then table.remove(recent, 1) end
