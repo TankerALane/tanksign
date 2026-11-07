@@ -181,3 +181,19 @@ H.test("logout saves a session record for reading from SavedVariables", function
     local text = table.concat(s.debugLog, "\n")
     H.ok(text:find("nameplate1 Razormane Thornweaver: held by a tank", 1, true), text)
 end)
+
+H.test("/ts diag reports rows, states and the secure self-test, and saves it", function()
+    local env, ctl = boot()
+    mob(ctl, "nameplate2")
+    env.SecureCmdOptionParse = function() return "1" end
+    ctl.slash("diag")
+    local text = table.concat(env.TanksignDB.lastDiag, "\n")
+    H.ok(text:find("nameplate2 exists=true", 1, true), text)
+    H.ok(text:find("conditionNow=1", 1, true), text)
+    H.ok(text:find("restricted Execute: ok=true", 1, true), text)
+    H.ok(text:find("step errors: none", 1, true), text)
+    ctl.combat = true
+    ctl.slash("diag")
+    H.ok(table.concat(env.TanksignDB.lastDiag, "\n"):find("self-test skipped: in combat", 1, true))
+    H.eq(#ctl.blockedCalls, 0)
+end)

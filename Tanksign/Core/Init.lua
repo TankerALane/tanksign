@@ -112,6 +112,13 @@ COMMANDS["reset"] = function(rest)
     ns.Log.Info(L.RESET_DONE)
 end
 
+COMMANDS["diag"] = function()
+    local lines = ns.Panel.Diagnose(true)
+    ns.db.lastDiag = lines
+    for _, l in ipairs(lines) do ns.Log.Info(l) end
+    ns.Log.Info(L.DIAG_SAVED)
+end
+
 COMMANDS["probe"] = function(rest) ns.Probe.Command(rest) end
 COMMANDS["version"] = function()
     ns.Log.Info("%s %s by %s (%s)", L.ADDON_TITLE, ns.VERSION, ns.AUTHOR, ns.SUPPORT)
@@ -184,6 +191,7 @@ function Init.SaveSession()
         tanks = table.concat(ns.Roster.tanks, ","),
         tankSource = ns.Roster.source,
         panelBuilt = ns.Panel.IsBuilt(),
+        diag = ns.Panel.Diagnose(),
     }
 end
 

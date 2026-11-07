@@ -25,6 +25,7 @@ L.HELP_LINES = {
     "/ts group  - only active in a group or instance (toggle)",
     "/ts reset [position]  - default settings, or only the panel position",
     "/ts debug  - explain each row decision in chat",
+    "/ts diag  - show what the client did with the panel rows (for bug reports)",
     "/ts probe  - API report (see /ts probe help)",
 }
 L.ON = "ON"
@@ -39,6 +40,8 @@ L.PANEL_LOCKED = "Panel locked."
 L.PANEL_UNLOCKED = "Panel unlocked: drag the title bar to move it."
 L.PANEL_EMPTY = "No enemy nameplates"
 L.PANEL_AFTER_COMBAT = "The panel will appear when this fight ends (secure frames cannot be built in combat)."
+L.PANEL_STEP_FAILED = "Panel setup step '%s' failed: %s (please report; /ts diag shows details)"
+L.DIAG_SAVED = "Diagnosis saved; it is in SavedVariables\\Tanksign.lua after /reload."
 L.DEBUG_ON = "Debug ON: row decisions are explained in chat."
 L.DEBUG_OFF = "Debug OFF."
 L.TANK_SET = "Fixed tank name: %s."

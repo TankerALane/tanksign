@@ -33,6 +33,21 @@ local eventFrame
 local elapsed = 0
 local UPDATE_EVERY = 0.25
 Panel.rows = rows
+Panel.errors = {} -- step -> first error message, shown by /ts diag and saved with the session
+
+-- Run one setup step; on failure remember why, say so once, and carry on.
+local function step(name, fn, ...)
+    local ok, err = pcall(fn, ...)
+    if not ok then
+        local msg = Compat.Describe(err)
+        if not Panel.errors[name] then
+            Panel.errors[name] = msg
+            ns.Log.Warn(L.PANEL_STEP_FAILED, name, msg)
+        end
+        ns.Log.Debug("panel step %s failed: %s", name, msg)
+    end
+    return ok
+end
 
 -- Restricted snippet: stack the rows whose token is a living hostile unit.
 -- Runs in Blizzard's secure environment (only a few functions exist there).
@@ -125,9 +140,9 @@ local function buildRow(i)
             tostring(Compat.InCombat()))
     end)
 
-    header:SetFrameRef("row" .. i, row)
-    _G.RegisterStateDriver(header, "np" .. i, "[@" .. token .. ",harm,nodead] 1; 0")
-    header:SetAttribute("_onstate-np" .. i, LAYOUT)
+    step("frameref", header.SetFrameRef, header, "row" .. i, row)
+    step("onstate", header.SetAttribute, header, "_onstate-np" .. i, LAYOUT)
+    step("statedriver", _G.RegisterStateDriver, header, "np" .. i, "[@" .. token .. ",harm,nodead] 1; 0")
     return row
 end
 
@@ -309,15 +324,19 @@ function Panel.Apply()
         pending = true
     else
         pending = false
-        container:SetScale(s.scale)
-        container:SetAlpha(s.alpha)
-        container:EnableMouse(not s.locked)
-        header:SetAttribute("tsActive", st.rows and 1 or 0)
-        header:SetAttribute("tsMaxRows", s.maxRows)
-        for _, row in ipairs(rows) do row:SetAttribute("marker1", s.marker) end
-        header:Execute(LAYOUT)
-        container:SetShown(st.show)
-        header:SetShown(st.rows)
+        step("scale", container.SetScale, container, s.scale)
+        step("alpha", container.SetAlpha, container, s.alpha)
+        step("mouse", container.EnableMouse, container, not s.locked)
+        step("attributes", function()
+            header:SetAttribute("tsActive", st.rows and 1 or 0)
+            header:SetAttribute("tsMaxRows", s.maxRows)
+            for _, row in ipairs(rows) do row:SetAttribute("marker1", s.marker) end
+        end)
+        step("show", function()
+            container:SetShown(st.show)
+            header:SetShown(st.rows)
+        end)
+        step("layout", header.Execute, header, LAYOUT)
         shown = st.show
     end
     setListening(ns.State.active and st.rows)
@@ -350,6 +369,78 @@ function Panel.ResetPosition()
     ns.db.panelPos = nil
     restorePosition()
     return true
+end
+
+-- /ts diag: what the client really did with the secure rows. Reads only.
+-- Live tests of the secure pieces, run only by /ts diag out of combat (not at logout).
+local function secureSelfTest(add)
+    if Compat.InCombat() then
+        add("self-test skipped: in combat")
+        return
+    end
+    local ok, err = pcall(header.Execute, header, [[ self:SetAttribute("tsDiagRan", "yes") ]])
+    add("restricted Execute: ok=%s ran=%s err=%s", tostring(ok), Compat.Describe(header:GetAttribute("tsDiagRan")),
+        ok and "none" or Compat.Describe(err))
+    ok, err = pcall(header.Execute, header,
+        [[ local r = self:GetFrameRef("row1") self:SetAttribute("tsDiagRef", r and "yes" or "no") ]])
+    add("GetFrameRef in snippet: ok=%s ref=%s err=%s", tostring(ok), Compat.Describe(header:GetAttribute("tsDiagRef")),
+        ok and "none" or Compat.Describe(err))
+    ok, err = pcall(header.Execute, header, [[ self:SetAttribute("tsDiagStr", tostring(12)) ]])
+    add("tostring in snippet: ok=%s value=%s err=%s", tostring(ok), Compat.Describe(header:GetAttribute("tsDiagStr")),
+        ok and "none" or Compat.Describe(err))
+    ok, err = pcall(header.Execute, header, LAYOUT)
+    local shownNow = 0
+    for _, row in ipairs(rows) do if row:IsShown() then shownNow = shownNow + 1 end end
+    add("layout run by hand: ok=%s rows shown after=%d err=%s", tostring(ok), shownNow, ok and "none" or Compat.Describe(err))
+end
+Panel.secureSelfTest = secureSelfTest
+
+function Panel.Diagnose(selfTest)
+    local out = {}
+    -- tostring of the first return value, even when a method returns nothing
+    local function str(...) return tostring((...)) end
+    local function add(fmt, ...) out[#out + 1] = string.format(fmt, ...) end
+    if not container then
+        add("panel not built")
+        return out
+    end
+    add("container shown=%s visible=%s; header shown=%s visible=%s height=%s",
+        str(container:IsShown()), str(container:IsVisible()), str(header:IsShown()),
+        str(header:IsVisible()), Compat.Describe(header:GetHeight()))
+    add("tsActive=%s tsMaxRows=%s active=%s (%s) listening=%s",
+        Compat.Describe(header:GetAttribute("tsActive")), Compat.Describe(header:GetAttribute("tsMaxRows")),
+        tostring(ns.State.active), tostring(ns.State.reason), str(eventFrame and eventFrame:IsEventRegistered("UNIT_HEALTH")))
+    local onstate = header:GetAttribute("_onstate-np1")
+    add("onstate snippet set=%s, frameref row1=%s", tostring(type(onstate) == "string"),
+        tostring(header:GetAttribute("frameref-row1") ~= nil))
+    local any = false
+    for i, row in ipairs(rows) do
+        local exists = Compat.Plain(_G.UnitExists(row.token), "SECRET")
+        local state = header:GetAttribute("state-np" .. i)
+        if exists == true or row:IsShown() or (state ~= nil and tostring(state) ~= "0") then
+            any = true
+            -- What the macro conditional itself answers, asked from addon code.
+            local cond = "n/a"
+            local parse = _G.SecureCmdOptionParse
+            if type(parse) == "function" then
+                local okP, r = pcall(parse, "[@" .. row.token .. ",harm,nodead] 1; 0")
+                cond = okP and Compat.Describe(r) or ("error " .. Compat.Describe(r))
+            end
+            add("%s exists=%s canAttack=%s dead=%s driverState=%s conditionNow=%s rowShown=%s",
+                row.token, tostring(exists), Compat.Describe(Compat.Plain(_G.UnitCanAttack("player", row.token), "SECRET")),
+                Compat.Describe(Compat.Plain(_G.UnitIsDead(row.token), "SECRET")), Compat.Describe(state), cond,
+                str(row:IsShown()))
+        end
+    end
+    if not any then add("no nameplate tokens exist and no row has a state") end
+    if selfTest then secureSelfTest(add) end
+    local errs = {}
+    for k, v in pairs(Panel.errors) do errs[#errs + 1] = k .. ": " .. v end
+    add("step errors: %s", #errs > 0 and table.concat(errs, " | ") or "none")
+    local disabled = {}
+    for k, v in pairs(Compat.disabled) do disabled[#disabled + 1] = k .. ": " .. tostring(v) end
+    add("disabled features: %s", #disabled > 0 and table.concat(disabled, " | ") or "none")
+    return out
 end
 
 function Panel.IsBuilt()
