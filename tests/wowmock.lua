@@ -25,7 +25,7 @@ local function noop() end
 function M.new(opts)
     opts = opts or {}
     local ctl = {
-        chat = {}, timers = {}, frames = {}, blockedCalls = {}, drivers = {}, time = 100, combat = false, units = {}, leader = false,
+        chat = {}, timers = {}, frames = {}, blockedCalls = {}, drivers = {}, watches = {}, time = 100, combat = false, units = {}, leader = false,
         assist = false, group = false, groupSize = 0, markBlocked = false,
         interface = opts.interface or 16001, toc = opts.toc or "Tanksign/Tanksign_Forever.toc",
         secret = M.makeSecret(),
@@ -215,6 +215,10 @@ function M.new(opts)
         ctl.drivers[#ctl.drivers + 1] = { frame = frame, state = state, conditions = conditions }
     end
     env.UnregisterStateDriver = function() end
+    env.RegisterUnitWatch = function(frame, asState)
+        if ctl.combat then error("RegisterUnitWatch in combat") end
+        ctl.watches[#ctl.watches + 1] = { frame = frame, asState = asState }
+    end
     env.GetNumBindings = function() return 2 end
     env.GetBinding = function(i) return i == 1 and "RAIDTARGET8" or "TARGETNEARESTENEMY" end
 

@@ -168,7 +168,7 @@ a TANK-role tank in party1, 8 units per sample):
 | `RegisterStateDriver` | api | secure [@nameplateN,harm,nodead] visibility for panel rows, also in combat | `/dump type(RegisterStateDriver)` -> "function" | ? |
 | `UnregisterStateDriver` | api | remove a state driver | `/dump type(UnregisterStateDriver)` -> "function" | ? |
 | `m:panel` | manual | panel rows appear for hostile plates, left-click marks, right-click targets, in combat too | fight a pack with the panel shown | ? |
-| `RegisterUnitWatch` | api | secure frames that show and hide with a unit, even in combat | `/dump type(RegisterUnitWatch)` -> "function" | ? |
+| `RegisterUnitWatch` | api | panel rows follow their nameplate token in combat (the [@nameplateN,harm] condition answers 0 on Forever) | `/dump type(RegisterUnitWatch)` -> "function" | ? |
 
 ### Marking
 

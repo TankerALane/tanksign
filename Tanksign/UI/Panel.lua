@@ -93,7 +93,7 @@ end
 
 local function buildRow(i)
     local token = "nameplate" .. i
-    local row = CreateFrame("Button", nil, header, "SecureActionButtonTemplate")
+    local row = CreateFrame("Button", nil, header, "SecureActionButtonTemplate,SecureHandlerStateTemplate")
     row:SetSize(ROW_W, ROW_H)
     row:RegisterForClicks("AnyUp", "AnyDown")
     row:SetAttribute("unit", token)
@@ -142,7 +142,14 @@ local function buildRow(i)
 
     step("frameref", header.SetFrameRef, header, "row" .. i, row)
     step("onstate", header.SetAttribute, header, "_onstate-np" .. i, LAYOUT)
-    step("statedriver", _G.RegisterStateDriver, header, "np" .. i, "[@" .. token .. ",harm,nodead] 1; 0")
+    -- Forever answers 0 to "[@nameplateN,harm,nodead]" even for a living enemy (probe,
+    -- /ts diag 2026-11-06), so rows follow Blizzard's unit watch instead: it sets the
+    -- row's "state-unitexists" while the nameplate token exists, and the row passes that
+    -- to the header, whose layout snippet stacks the rows. All of it runs in secure code.
+    step("frameref", row.SetFrameRef, row, "header", header)
+    step("rowstate", row.SetAttribute, row, "_onstate-unitexists",
+        'self:GetFrameRef("header"):SetAttribute("state-np' .. i .. '", newstate and "1" or "0")')
+    step("unitwatch", _G.RegisterUnitWatch, row, true)
     return row
 end
 
@@ -414,6 +421,7 @@ function Panel.Diagnose(selfTest)
     add("onstate snippet set=%s, frameref row1=%s", tostring(type(onstate) == "string"),
         tostring(header:GetAttribute("frameref-row1") ~= nil))
     local any = false
+    local variantsDone = false
     for i, row in ipairs(rows) do
         local exists = Compat.Plain(_G.UnitExists(row.token), "SECRET")
         local state = header:GetAttribute("state-np" .. i)
@@ -426,10 +434,22 @@ function Panel.Diagnose(selfTest)
                 local okP, r = pcall(parse, "[@" .. row.token .. ",harm,nodead] 1; 0")
                 cond = okP and Compat.Describe(r) or ("error " .. Compat.Describe(r))
             end
-            add("%s exists=%s canAttack=%s dead=%s driverState=%s conditionNow=%s rowShown=%s",
+            add("%s exists=%s canAttack=%s dead=%s watch=%s headerState=%s condition=%s rowShown=%s",
                 row.token, tostring(exists), Compat.Describe(Compat.Plain(_G.UnitCanAttack("player", row.token), "SECRET")),
-                Compat.Describe(Compat.Plain(_G.UnitIsDead(row.token), "SECRET")), Compat.Describe(state), cond,
-                str(row:IsShown()))
+                Compat.Describe(Compat.Plain(_G.UnitIsDead(row.token), "SECRET")),
+                Compat.Describe(row:GetAttribute("state-unitexists")), Compat.Describe(state), cond, str(row:IsShown()))
+            if type(parse) == "function" and not variantsDone then
+                -- Which part of the macro condition does Forever reject for nameplates?
+                variantsDone = true
+                local parts = {}
+                for _, c in ipairs({ "[@TOKEN] 1; 0", "[@TOKEN,exists] 1; 0", "[@TOKEN,harm] 1; 0",
+                    "[@TOKEN,nodead] 1; 0", "[@TOKEN,harm,nodead] 1; 0", "[@target,harm,nodead] 1; 0" }) do
+                    local text = c:gsub("TOKEN", row.token)
+                    local okP, r = pcall(parse, text)
+                    parts[#parts + 1] = text:match("^(%b[])") .. "=" .. (okP and Compat.Describe(r) or "error")
+                end
+                add("conditions: %s", table.concat(parts, " "))
+            end
         end
     end
     if not any then add("no nameplate tokens exist and no row has a state") end

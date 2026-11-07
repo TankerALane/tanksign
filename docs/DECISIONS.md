@@ -90,3 +90,14 @@ In instances mob names are secret, so rows hand `UnitName` to the font string un
 showing "?". The held highlight uses `UnitThreatSituation(tank, nameplateN)`, readable in the
 dungeon probe. A mob that is not in combat is shown neutral (grey), not "loose" (red): red means
 in combat and no tank holds it.
+
+## D-009 Rows follow Blizzard's unit watch, not a macro condition (2026-11-06)
+
+`/ts diag` in a dungeon: seven living, attackable enemy nameplates, and
+`SecureCmdOptionParse("[@nameplateN,harm,nodead] 1; 0")` answered 0 for every one, both from
+addon code and in the secure state drivers. Every other secure piece worked (restricted Execute,
+GetFrameRef, tostring, the layout snippet). So rows now use `RegisterUnitWatch(row, true)`: the
+row (also a `SecureHandlerStateTemplate`) receives `state-unitexists` while its nameplate token
+exists and passes it to the header, whose layout snippet stacks the rows. Cost: a row also shows
+for a friendly nameplate if friendly nameplates are turned on. `/ts diag` now tests condition
+variants to learn which part Forever rejects.

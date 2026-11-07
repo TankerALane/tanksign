@@ -81,7 +81,7 @@ ns.ProbeChecks = {
     { id = "RegisterStateDriver", kind = "api", area = "Targeting", why = "secure [@nameplateN,harm,nodead] visibility for panel rows, also in combat" },
     { id = "UnregisterStateDriver", kind = "api", area = "Targeting", why = "remove a state driver" },
     { id = "m:panel", kind = "manual", area = "Targeting", why = "panel rows appear for hostile plates, left-click marks, right-click targets, in combat too", test = "fight a pack with the panel shown" },
-    { id = "RegisterUnitWatch", kind = "api", area = "Targeting", why = "secure frames that show and hide with a unit, even in combat" },
+    { id = "RegisterUnitWatch", kind = "api", area = "Targeting", why = "panel rows follow their nameplate token in combat (the [@nameplateN,harm] condition answers 0 on Forever)" },
     { id = "x:mark.test", kind = "custom", area = "Marking", why = "results of /ts probe mark (solo, party leader, party member, in combat)", test = "/ts probe mark" },
 
     -- Group, roles and permissions

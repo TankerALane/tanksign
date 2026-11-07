@@ -37,9 +37,12 @@ H.test("40 secure rows: left click marks, right click targets, driven by hostile
     H.eq(rows[7]._attrs.action1, "set")
     H.eq(rows[7]._attrs.marker1, 8)
     H.eq(rows[7]._attrs.type2, "target")
-    H.eq(#ctl.drivers, 40)
-    H.eq(ctl.drivers[3].conditions, "[@nameplate3,harm,nodead] 1; 0")
-    local header = ctl.drivers[1].frame
+    H.eq(#ctl.drivers, 0, "no macro-condition drivers: Forever answers 0 for nameplates")
+    H.eq(#ctl.watches, 40)
+    H.ok(ctl.watches[3].frame == rows[3] and ctl.watches[3].asState == true)
+    H.eq(rows[3]._template, "SecureActionButtonTemplate,SecureHandlerStateTemplate")
+    H.ok(rows[3]._attrs["_onstate-unitexists"]:find('SetAttribute("state-np3"', 1, true))
+    local header = rows[1]._parent
     H.ok(header._attrs["_onstate-np1"]:find("GetFrameRef", 1, true))
     H.eq(header._attrs.tsActive, 1)
     H.eq(header._attrs.tsMaxRows, 8)
@@ -72,7 +75,7 @@ end)
 
 H.test("toggle out of combat: inert when off, back on when on", function()
     local env, ctl = boot()
-    local header = ctl.drivers[1].frame
+    local header = ctl.ns.Panel.rows[1]._parent
     ctl.slash("off")
     H.ok(ctl.chatText():find("DISABLED", 1, true))
     H.eq(env.TanksignDB.settings.enabled, false)
@@ -89,7 +92,7 @@ end)
 
 H.test("toggle in combat: no protected call, fades now, applies after combat", function()
     local env, ctl = boot()
-    local header = ctl.drivers[1].frame
+    local header = ctl.ns.Panel.rows[1]._parent
     ctl.combat = true
     ctl.fire("PLAYER_REGEN_DISABLED")
     ctl.slash("off")
@@ -133,11 +136,11 @@ end)
 H.test("only in group: solo is inactive", function()
     local _, ctl = boot()
     ctl.slash("group")
-    H.eq(ctl.drivers[1].frame._attrs.tsActive, 0)
+    H.eq(ctl.ns.Panel.rows[1]._parent._attrs.tsActive, 0)
     H.eq(ctl.ns.State.reason, "not in group")
     ctl.group, ctl.groupSize = true, 2
     ctl.fire("GROUP_ROSTER_UPDATE")
-    H.eq(ctl.drivers[1].frame._attrs.tsActive, 1)
+    H.eq(ctl.ns.Panel.rows[1]._parent._attrs.tsActive, 1)
 end)
 
 H.test("a /reload in combat builds the panel after the fight", function()
@@ -159,7 +162,7 @@ H.test("status, tank name, rows, scale, reset commands", function()
     ctl.slash("source name")
     H.eq(ctl.ns.Roster.tanks[1], "party2")
     ctl.slash("rows 4")
-    H.eq(ctl.drivers[1].frame._attrs.tsMaxRows, 4)
+    H.eq(ctl.ns.Panel.rows[1]._parent._attrs.tsMaxRows, 4)
     ctl.slash("scale 1.25")
     H.eq(env.TanksignDB.settings.scale, 1.25)
     ctl.slash("reset")
@@ -189,7 +192,8 @@ H.test("/ts diag reports rows, states and the secure self-test, and saves it", f
     ctl.slash("diag")
     local text = table.concat(env.TanksignDB.lastDiag, "\n")
     H.ok(text:find("nameplate2 exists=true", 1, true), text)
-    H.ok(text:find("conditionNow=1", 1, true), text)
+    H.ok(text:find("condition=1", 1, true), text)
+    H.ok(text:find("conditions: [@nameplate2]=1", 1, true), text)
     H.ok(text:find("restricted Execute: ok=true", 1, true), text)
     H.ok(text:find("step errors: none", 1, true), text)
     ctl.combat = true
