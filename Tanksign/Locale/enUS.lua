@@ -148,6 +148,7 @@ L.PROBE_HELP = {
     "/ts probe mark | unmark  - addon SetRaidTarget test (blocked on Forever)",
     "/ts probe target  - addon target change test (blocked on Forever)",
     "/ts probe buttons  - secure skull buttons you click (out of combat)",
+    "/ts probe marks  - record how markers change, to the millisecond (180 s, or run it again to stop)",
     "/ts probe combat on|off  - sample unit values in combat",
     "/ts probe clear  - forget saved probe samples",
 }
@@ -175,6 +176,8 @@ L.PROBE_BTN_T_TYPE = "Target nameplate1 (type=target)"
 L.PROBE_BTN_T_SLASH = "Target nameplate1 (/target nameplate1)"
 L.PROBE_BTN_T_COND = "Target nameplate1 (/target [@nameplate1])"
 L.PROBE_BTN_T_ASSIST = "Target the tank's target (/assist party1)"
+L.MARKWATCH_ON = "Mark recorder ON for %d seconds. Change markers now (see the steps Claude gave you); /ts probe marks again stops it."
+L.MARKWATCH_OFF = "Mark recorder OFF: %d marker events, %d times a mob read marked, then unmarked, then marked. /ts probe shows the timeline."
 L.PROBE_UNKNOWN = "Unknown probe command. /ts probe help lists them."
 
 L.COPY_HINT = "Ctrl+A then Ctrl+C copies everything. Esc closes."

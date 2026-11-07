@@ -70,6 +70,7 @@ end
 function Marks.Placed(marker, token)
     ns.MarkLogic.Place(state, marker, token, _G.GetTime())
     ns.Log.Debug("marker %d placed on %s (remembered)", marker, token)
+    if ns.MarkWatch then ns.MarkWatch.Note(string.format("TANKSIGN click: marker %d on %s", marker, token)) end
     refreshAll()
     if ns.Panel then ns.Panel.UpdateAll() end
 end

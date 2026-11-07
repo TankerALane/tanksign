@@ -179,6 +179,14 @@ function ProbeReport.Build(meta, results, extra)
         end
     end
 
+    add("-- mark watch (/ts probe marks)")
+    if not extra.markWatch or #extra.markWatch == 0 then
+        add("not run yet: /ts probe marks, then change markers (see the README of the probe)")
+    else
+        if extra.markWatchSummary then add(extra.markWatchSummary) end
+        for _, l in ipairs(extra.markWatch) do add(l) end
+    end
+
     add("-- target tests")
     if not extra.targets or #extra.targets == 0 then
         add("none yet: /ts probe target (once out of combat is enough)")

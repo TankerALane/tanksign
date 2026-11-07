@@ -174,6 +174,7 @@ a TANK-role tank in party1, 8 units per sample):
 
 | ID | Kind | What it is for | In-game test | Forever |
 |---|---|---|---|---|
+| `x:mark.watch` | custom | timeline of marker states while someone replaces a marker: is there a brief unmarked gap | `/ts probe marks` | ? |
 | `x:mark.test` | custom | results of /ts probe mark (solo, party leader, party member, in combat) | `/ts probe mark` | ? |
 
 ### Group

@@ -31,6 +31,7 @@ Compat\Compat.lua
 UI\Widgets.lua
 Debug\CopyWindow.lua
 Debug\Probe.lua
+Debug\MarkWatch.lua
 Core\Roster.lua
 Core\State.lua
 UI\Panel.lua

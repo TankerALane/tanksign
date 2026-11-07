@@ -285,6 +285,12 @@ custom["x:secure.mark"] = function()
     return "INFO", n .. " secure button clicks saved (see 'secure button marks' below)"
 end
 
+custom["x:mark.watch"] = function()
+    local p = state()
+    if not p.markWatch or #p.markWatch == 0 then return "MANUAL", "not run yet: /ts probe marks" end
+    return "INFO", tostring(p.markWatchSummary or "recorder still running") .. " (timeline below)"
+end
+
 custom["x:target.test"] = function()
     local n = #state().targets
     if n == 0 then return "MANUAL", "not run yet: /ts probe target" end
@@ -425,6 +431,7 @@ function Probe.BuildReport()
     local p = state()
     local lines = R.Build(currentMeta, results, {
         combat = p.combat, marks = p.marks, targets = p.targets, events = Probe.events, secureMarks = p.secureMarks,
+        markWatch = p.markWatch, markWatchSummary = p.markWatchSummary,
     })
     currentMeta = nil
     return lines
@@ -506,6 +513,7 @@ end
 function Probe.Clear()
     local p = state()
     p.combat, p.marks, p.targets, p.secureMarks, p.lastReport = {}, {}, {}, {}, nil
+    p.markWatch, p.markWatchSummary = nil, nil
     ns.Log.Info(L.PROBE_CLEARED)
 end
 
@@ -665,6 +673,8 @@ function Probe.Command(rest)
         Probe.MarkTest(0)
     elseif sub == "target" then
         Probe.TargetTest()
+    elseif sub == "marks" then
+        ns.MarkWatch.Toggle()
     elseif sub == "buttons" then
         Probe.ToggleButtons()
     elseif sub == "combat" then

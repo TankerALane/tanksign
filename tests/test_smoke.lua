@@ -222,3 +222,29 @@ H.test("probe reports never contain other players' names or GUIDs", function()
     H.ok(not text:find("Player-1-ABC", 1, true), "guid kept out")
     H.ok(text:find('name=<player>', 1, true), text)
 end)
+
+H.test("mark recorder: counts a marked -> unmarked -> marked gap, not a seamless swap", function()
+    local env, ctl = boot()
+    local a = hostile(ctl, "nameplate1", { mark = 8 })
+    local b = hostile(ctl, "nameplate2", { mark = 7 })
+    ctl.slash("probe marks")
+    local watch
+    for _, f in ipairs(ctl.frames) do if f._events.RAID_TARGET_UPDATE and f._scripts.OnUpdate then watch = f end end
+    H.ok(watch, "recorder listening")
+    local function frameTick() ctl.time = ctl.time + 0.016; watch._scripts.OnUpdate(watch, 0.016) end
+    -- someone puts a square on the skull mob, with a short break
+    ctl.fire("RAID_TARGET_UPDATE")
+    a.mark = nil; frameTick()
+    a.mark = 6; frameTick()
+    -- someone puts a moon on the X mob, seamlessly (no break)
+    ctl.fire("RAID_TARGET_UPDATE")
+    b.mark = 5; frameTick()
+    ctl.slash("probe marks")
+    H.ok(env.TanksignDB.probe.markWatchSummary:find("1 marked->unmarked->marked gaps", 1, true),
+        env.TanksignDB.probe.markWatchSummary)
+    ctl.slash("probe")
+    local text = table.concat(env.TanksignDB.probe.lastReport, "\n")
+    H.ok(text:find("nameplate1 GAP", 1, true), text)
+    H.ok(not text:find("nameplate2 GAP", 1, true))
+    H.ok(text:find("-- mark watch", 1, true))
+end)
