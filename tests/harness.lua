@@ -86,6 +86,7 @@ H.PURE_FILES = {
     "Core/ActiveLogic.lua",
     "Core/RowLogic.lua",
     "Core/Profiles.lua",
+    "Core/MarkLogic.lua",
     "Debug/ProbeChecks.lua",
     "Debug/ProbeReport.lua",
 }

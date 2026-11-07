@@ -112,6 +112,21 @@ COMMANDS["marker"] = function(rest)
     end
 end
 
+COMMANDS["rightmarker"] = function(rest)
+    local m = markerFromText(rest)
+    if m then
+        setSetting("rightMarker", m, L.RIGHT_MARKER_SET, L.MARKER_NAMES[m])
+    else
+        ns.Log.Warn(L.MARKER_USAGE)
+    end
+end
+
+COMMANDS["icons"] = function()
+    local on = not (ns.db.settings.rowIcons or ns.db.settings.plateIcons)
+    ns.db.settings.rowIcons, ns.db.settings.plateIcons = on, on
+    setSetting("rowIcons", on, on and L.ICONS_ON or L.ICONS_OFF)
+end
+
 COMMANDS["rows"] = function(rest)
     local n = ns.Settings.ParseNumber(rest, 1, 15)
     if n and n % 1 == 0 then setSetting("maxRows", n, L.ROWS_SET, n) else ns.Log.Warn(L.ROWS_USAGE) end

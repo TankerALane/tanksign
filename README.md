@@ -4,7 +4,7 @@
 you, each with a live health bar, shows which ones the tank holds, and puts the skull on a mob with
 one click. It is an addon for World of Warcraft, built for **WoW Forever**.
 
-> **Status: 0.4.0, in development.** The panel and click-to-mark are confirmed in game on Forever
+> **Status: 0.5.0, in development.** The panel and click-to-mark are confirmed in game on Forever
 > (dungeon, in combat). See [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## Why it is a panel and not automatic
@@ -19,7 +19,12 @@ Forever client does not allow that, and Tanksign does not try to get around it:
 
 ## Using it
 
-- **Left-click** a row: put the skull (or your chosen marker) on that mob. Works in combat.
+- **Left-click** a row: put the **skull** on that mob. **Right-click**: put the **cross** (red X).
+  Both work in combat, and both markers can be changed in the options.
+- The skull or X you placed shows on that mob's row and above its nameplate. Forever hides a marked
+  mob's marker from addons, so Tanksign shows only the markers **you** placed with it (rows, and the
+  mouseover key when it can tell the nameplate). Markers placed by other players are not shown; an
+  icon goes away when the mob turns out to be unmarked or its nameplate disappears.
 - Bar colors: **green**, a tank holds it; **red**, in combat and no tank holds it (loose);
   **grey**, not pulled yet, or the client keeps the threat secret.
 - Tags before the name: **E** elite, **R** rare, **B** boss, **C** caster (uses mana).
@@ -47,7 +52,9 @@ still works.
 | `/ts show`, `/ts hide`, `/ts lock`, `/ts unlock` | panel visibility and dragging |
 | `/ts tank <Name>` | fixed tank name (`/ts tank` alone clears it) |
 | `/ts source auto\|role\|maintank\|name\|threat` | where the tank comes from (auto = in that order) |
-| `/ts marker <1-8 or name>` | the marker a click places (default skull) |
+| `/ts marker <1-8 or name>` | the marker a left-click places (default skull) |
+| `/ts rightmarker <1-8 or name>` | the marker a right-click places (default cross) |
+| `/ts icons` | marker icons on rows and nameplates (toggle) |
 | `/ts rows <1-15>`, `/ts scale <0.5-2>` | panel size |
 | `/ts group` | only active in a group or instance |
 | `/ts tags`, `/ts dim` | row tags, and dimming of critters, totems and pets (toggles) |

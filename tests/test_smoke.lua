@@ -20,7 +20,7 @@ end
 
 H.test("loads on Forever, creates only the allowed globals", function()
     local env, ctl = boot()
-    H.ok(ctl.chatText():find("v0.4.0 loaded", 1, true), ctl.chatText())
+    H.ok(ctl.chatText():find("v0.5.0 loaded", 1, true), ctl.chatText())
     H.eq(type(env.TanksignDB), "table")
     H.eq(env.TanksignDB.profiles.Default.enabled, true)
     H.eq(table.concat(ctl.newGlobals(), ","), table.concat({ "BINDING_HEADER_TANKSIGN",
@@ -102,6 +102,7 @@ end)
 
 H.test("mark test records success, toggling guard and blocked calls", function()
     local env, ctl = boot()
+    ctl.marksReadable = true -- probe logic; Forever itself hides marked units' markers
     ctl.slash("probe mark")
     H.ok(ctl.chatText():find("target a mob first", 1, true))
     local u = hostile(ctl, "target")
@@ -166,6 +167,7 @@ end)
 
 H.test("secure skull buttons: built out of combat, clicks recorded, tank's target button", function()
     local env, ctl = boot()
+    ctl.marksReadable = true
     ctl.group, ctl.groupSize = true, 3
     ctl.roles = { party2 = "TANK" }
     local u = hostile(ctl, "target")

@@ -17,7 +17,10 @@ Settings.DEFAULTS = {
     onlyInGroup = false,     -- only active in a group or an instance
     tankSource = "auto",     -- auto = role, then Main Tank, then fixed name, then threat
     tankName = "",           -- for tankSource "name" (and the auto chain)
-    marker = 8,              -- skull
+    marker = 8,              -- skull: left-click
+    rightMarker = 7,         -- cross: right-click
+    rowIcons = true,         -- marker icon on the row of a mob you marked with Tanksign
+    plateIcons = true,       -- marker icon above that mob's nameplate
     showPanel = true,
     showToggle = true,       -- the small ON/OFF skull button on the panel
     locked = false,
@@ -38,7 +41,7 @@ local function valid(key, value)
         for _, s in ipairs(Settings.TANK_SOURCES) do if s == value then return true end end
         return false
     end
-    if key == "marker" then return value >= 1 and value <= 8 and value % 1 == 0 end
+    if key == "marker" or key == "rightMarker" then return value >= 1 and value <= 8 and value % 1 == 0 end
     if key == "scale" then return value >= 0.5 and value <= 2 end
     if key == "alpha" then return value >= 0.2 and value <= 1 end
     if key == "maxRows" then return value >= 1 and value <= 15 and value % 1 == 0 end

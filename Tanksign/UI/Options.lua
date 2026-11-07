@@ -106,6 +106,11 @@ local function build()
     heading(L.OPT_MARKING)
     add(W.Cycle(content, L.OPT_MARKER, function() return L.MARKER_NAMES[settings().marker] end,
         function() set("marker", nextIn(ns.Settings.MARKERS, settings().marker)) end))
+    add(W.Cycle(content, L.OPT_RIGHT_MARKER, function() return L.MARKER_NAMES[settings().rightMarker] end,
+        function() set("rightMarker", nextIn(ns.Settings.MARKERS, settings().rightMarker)) end))
+    toggle(L.OPT_ROW_ICONS, "rowIcons")
+    toggle(L.OPT_PLATE_ICONS, "plateIcons")
+    note(L.MARKS_NOTE)
     note(L.OPT_MARKING_NOTE)
 
     heading(L.OPT_PANEL)

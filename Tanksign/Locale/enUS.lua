@@ -20,7 +20,9 @@ L.HELP_LINES = {
     "/ts lock | unlock  - stop or allow dragging the panel",
     "/ts tank <Name>  - fixed tank name (/ts tank alone clears it)",
     "/ts source auto|role|maintank|name|threat  - where the tank comes from",
-    "/ts marker <1-8 or name>  - marker that a click places (default skull)",
+    "/ts marker <1-8 or name>  - marker a left-click places (default skull)",
+    "/ts rightmarker <1-8 or name>  - marker a right-click places (default cross)",
+    "/ts icons  - marker icons on rows and nameplates (toggle)",
     "/ts rows <1-15>  - most rows shown   /ts scale <0.5-2>",
     "/ts group  - only active in a group or instance (toggle)",
     "/ts tags  - E elite, R rare, B boss, C caster tags on rows (toggle)",
@@ -53,7 +55,14 @@ L.TANK_CLEARED = "Fixed tank name cleared."
 L.TANK_SHADOWED = "Note: tank source is auto, and '%s' comes before a fixed name. Use /ts source name to use the name."
 L.SOURCE_SET = "Tank source: %s."
 L.SOURCE_USAGE = "Usage: /ts source auto|role|maintank|name|threat"
-L.MARKER_SET = "Clicks now place: %s."
+L.MARKER_SET = "Left-click now places: %s."
+L.RIGHT_MARKER_SET = "Right-click now places: %s."
+L.ICONS_ON = "Marker icons on: rows and nameplates of mobs you marked with Tanksign."
+L.ICONS_OFF = "Marker icons off."
+L.OPT_RIGHT_MARKER = "Marker a right-click places"
+L.OPT_ROW_ICONS = "Show the marker on the row of a mob you marked"
+L.OPT_PLATE_ICONS = "Show the marker above that mob's nameplate"
+L.MARKS_NOTE = "Icons show the markers YOU place with Tanksign. Forever hides a marked mob's marker from addons, so markers placed by others are not shown."
 L.MARKER_USAGE = "Usage: /ts marker <1-8> or a name (skull, cross, square, moon, triangle, diamond, circle, star)"
 L.ROWS_SET = "Up to %d rows."
 L.ROWS_USAGE = "Usage: /ts rows <1-15>"
@@ -93,7 +102,7 @@ L.OPT_DIM = "Dim critters, totems and pets"
 L.OPT_MAX_ROWS = "Most rows shown"
 L.OPT_ROWS_NOTE = "Not possible on Forever: sorting by health, ignoring mobs below a health threshold, and the 'within 90% of top threat' option (health and exact threat are secret to addons)."
 L.OPT_MARKING = "Marking"
-L.OPT_MARKER = "Marker a click places"
+L.OPT_MARKER = "Marker a left-click places"
 L.OPT_MARKING_NOTE = "In a raid only the leader and assistants can mark; the panel title says so. Not possible on Forever: clearing the skull on disable or at combat end (addons cannot remove markers)."
 L.OPT_PANEL = "Panel"
 L.OPT_SHOW_PANEL = "Show the panel"
@@ -126,7 +135,8 @@ L.NOT_IN_COMBAT = "Not possible in combat; try again after the fight."
 L.RESET_DONE = "Settings reset to defaults."
 L.MARKER_NAMES = { [1] = "Star", [2] = "Circle", [3] = "Diamond", [4] = "Triangle", [5] = "Moon", [6] = "Square",
     [7] = "Cross", [8] = "Skull" }
-L.ROW_TIP_LEFT = "Left-click: put the marker on this mob"
+L.ROW_TIP_LEFT = "Left-click: put the skull (or your left-click marker) on this mob"
+L.ROW_TIP_RIGHT = "Right-click: put the cross (or your right-click marker) on this mob"
 L.TOGGLE_TIP_ON = "Tanksign is ON. Click to turn it off."
 L.TOGGLE_TIP_OFF = "Tanksign is OFF. Click to turn it on."
 L.TOGGLE_TIP_DRAG = "Drag the title bar to move the panel (when unlocked, out of combat)."

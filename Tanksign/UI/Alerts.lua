@@ -27,15 +27,17 @@ function Alerts.CanMark()
     return ns.ActiveLogic.CanMark(Alerts.MarkingFacts())
 end
 
--- Called from PostClick (after Blizzard's secure code ran). unit = the marked token.
-function Alerts.OnMark(unit)
+-- Called from PostClick (after Blizzard's secure code ran). unit = the marked token,
+-- marker = the marker placed. Returns true when the mark could happen (you have rights).
+function Alerts.OnMark(unit, marker)
     local s = ns.db.settings
+    marker = marker or s.marker
     if not Alerts.CanMark() then
         if not warnedNoRights then
             warnedNoRights = true
             ns.Log.Warn(L.NO_MARK_RIGHTS)
         end
-        return
+        return false
     end
     if s.soundOnMark then
         local kit = _G.SOUNDKIT
@@ -44,6 +46,7 @@ function Alerts.OnMark(unit)
     end
     if s.chatOnMark then
         local name = Compat.Plain(_G.UnitName(unit))
-        ns.Log.Info(L.MARK_PLACED, L.MARKER_NAMES[s.marker] or "?", type(name) == "string" and name or L.A_MOB)
+        ns.Log.Info(L.MARK_PLACED, L.MARKER_NAMES[marker] or "?", type(name) == "string" and name or L.A_MOB)
     end
+    return true
 end

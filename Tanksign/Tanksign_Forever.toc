@@ -2,7 +2,7 @@
 ## Title: Tanksign
 ## Notes: A click-to-skull panel of the mobs your tank is holding, with live health bars. Support: support@decoupledlane.com
 ## Author: Decoupled Lane Studio
-## Version: 0.4.0
+## Version: 0.5.0
 ## IconTexture: Interface\AddOns\Tanksign\media\icon
 ## SavedVariables: TanksignDB
 ## X-Flavor: Forever
@@ -21,6 +21,7 @@ Core\TankLogic.lua
 Core\ActiveLogic.lua
 Core\RowLogic.lua
 Core\Profiles.lua
+Core\MarkLogic.lua
 Debug\ProbeChecks.lua
 Debug\ProbeReport.lua
 Core\Log.lua
@@ -31,6 +32,7 @@ Debug\Probe.lua
 Core\Roster.lua
 Core\State.lua
 UI\Panel.lua
+UI\Marks.lua
 UI\Keys.lua
 UI\Alerts.lua
 UI\Options.lua

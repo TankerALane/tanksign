@@ -34,7 +34,11 @@ local function makeButton(name, unit)
         if down then return end
         local u = self:GetAttribute("unit")
         ns.Log.Debug("key %s pressed (unit %s, in combat %s)", tostring(name), tostring(u), tostring(Compat.InCombat()))
-        if u then ns.Alerts.OnMark(u) end
+        if u and ns.Alerts.OnMark(u, ns.db.settings.marker) then
+            -- Remember it only if we can tell which nameplate the key marked.
+            local token = ns.Marks.PlateFor(u)
+            if token then ns.Marks.Placed(ns.db.settings.marker, token) end
+        end
     end)
     b:Hide()
     return b

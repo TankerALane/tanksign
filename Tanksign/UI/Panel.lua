@@ -101,6 +101,9 @@ local function buildRow(i)
     row:SetAttribute("type1", "raidtarget")
     row:SetAttribute("action1", "set")
     row:SetAttribute("marker1", ns.db.settings.marker)
+    row:SetAttribute("type2", "raidtarget")
+    row:SetAttribute("action2", "set")
+    row:SetAttribute("marker2", ns.db.settings.rightMarker)
     row:Hide()
     row.token = token
 
@@ -122,8 +125,12 @@ local function buildRow(i)
     row.held:Hide()
     row.edges = W.Border(row, "border", 1)
     -- Tags sit in their own font string: the name may be secret and cannot be joined.
+    row.mark = row.bar:CreateTexture(nil, "OVERLAY")
+    row.mark:SetSize(14, 14)
+    row.mark:SetPoint("LEFT", 3, 0)
+    row.mark:Hide()
     row.tag = W.Text(row.bar, "small", "heading")
-    row.tag:SetPoint("LEFT", 4, 0)
+    row.tag:SetPoint("LEFT", 20, 0)
     row.name = W.Text(row.bar, "small", "text")
     row.name:SetPoint("LEFT", row.tag, "RIGHT", 3, 0)
     row.name:SetPoint("RIGHT", -52, 0)
@@ -133,7 +140,7 @@ local function buildRow(i)
     row.hp:SetJustifyH("RIGHT")
 
     row:SetScript("OnEnter", function(self)
-        W.Tooltip(self, L.ADDON_TITLE, { L.ROW_TIP_LEFT })
+        W.Tooltip(self, L.ADDON_TITLE, { L.ROW_TIP_LEFT, L.ROW_TIP_RIGHT })
     end)
     row:SetScript("OnLeave", W.HideTooltip)
     -- Runs after Blizzard's secure click handler; only logs, never acts.
@@ -141,7 +148,10 @@ local function buildRow(i)
         if down then return end
         ns.Log.Debug("row %s %s-click (in combat %s)", self.token, button == "LeftButton" and "left" or tostring(button),
             tostring(Compat.InCombat()))
-        if button == "LeftButton" and ns.Alerts then ns.Alerts.OnMark(self.token) end
+        if (button == "LeftButton" or button == "RightButton") and ns.Alerts then
+            local marker = button == "LeftButton" and ns.db.settings.marker or ns.db.settings.rightMarker
+            if ns.Alerts.OnMark(self.token, marker) then ns.Marks.Placed(marker, self.token) end
+        end
     end)
 
     step("frameref", header.SetFrameRef, header, "row" .. i, row)
@@ -263,6 +273,14 @@ local function updateRow(row)
         row.lastDim = dim
     end
     row.bar:SetAlpha(dim and 0.4 or 1)
+    ns.Marks.Observe(u)
+    local marker = s.rowIcons and ns.Marks.Get(u) or nil
+    if marker then
+        row.mark:SetTexture(ns.Marks.Icon(marker))
+        row.mark:Show()
+    else
+        row.mark:Hide()
+    end
     local isTarget = Compat.Plain(_G.UnitIsUnit(u, "target")) == true
     for _, e in ipairs(row.edges) do W.Fill(e, isTarget and "accent" or "border") end
 end
@@ -314,6 +332,12 @@ local function onEvent(_, event, unit)
         if pending then Panel.Apply() end
         return
     end
+    if event == "NAME_PLATE_UNIT_REMOVED" then
+        ns.Marks.Removed(unit)
+        Panel.UpdateAll()
+        return
+    end
+    if event == "NAME_PLATE_UNIT_ADDED" then ns.Marks.PlateAdded(unit) end
     if event == "UNIT_HEALTH" or event == "UNIT_MAXHEALTH" or event == "NAME_PLATE_UNIT_ADDED" then
         Panel.UpdateToken(unit)
     else
@@ -361,7 +385,10 @@ function Panel.Apply()
         step("attributes", function()
             header:SetAttribute("tsActive", st.rows and 1 or 0)
             header:SetAttribute("tsMaxRows", s.maxRows)
-            for _, row in ipairs(rows) do row:SetAttribute("marker1", s.marker) end
+            for _, row in ipairs(rows) do
+                row:SetAttribute("marker1", s.marker)
+                row:SetAttribute("marker2", s.rightMarker)
+            end
         end)
         step("show", function()
             container:SetShown(st.show)

@@ -90,9 +90,12 @@ function M.new(opts)
     function Frame:Click(button, down)
         if self._scripts.PreClick then self._scripts.PreClick(self, button or "LeftButton", down) end
         local a = self._attrs
-        if self._template == "SecureActionButtonTemplate" and a.type == "raidtarget" then
-            local x = ctl.units[a.unit]
-            if x then x.mark = a.marker end
+        local n = (button == "RightButton") and "2" or "1"
+        local kind = a["type" .. n] or a.type
+        if type(self._template) == "string" and self._template:find("SecureActionButtonTemplate", 1, true)
+            and kind == "raidtarget" then
+            local x = ctl.units[a["unit" .. n] or a.unit]
+            if x then x.mark = a["marker" .. n] or a.marker end
         end
         if self._scripts.PostClick then self._scripts.PostClick(self, button or "LeftButton", down) end
     end
@@ -175,7 +178,12 @@ function M.new(opts)
         if not x then return nil end
         return x.isTanking, x.threatStatus, x.threatPct, x.threatPct, x.threatValue
     end
-    env.GetRaidTargetIndex = function(u) local x = unit(u) return x and x.mark end
+    env.GetRaidTargetIndex = function(u)
+        local x = unit(u)
+        if not x or x.mark == nil then return nil end
+        if ctl.marksReadable then return x.mark end
+        return ctl.secret
+    end
     env.SetRaidTarget = function(u, i)
         if ctl.markBlocked then
             ctl.fire("ADDON_ACTION_BLOCKED", "Tanksign", "SetRaidTarget()")
@@ -201,7 +209,13 @@ function M.new(opts)
     env.InCombatLockdown = function() return ctl.combat end
 
     -- Nameplates and bindings ------------------------------------------------------
+    ctl.plates = {}
     env.C_NamePlate = {
+        GetNamePlateForUnit = function(token)
+            if not ctl.units[token] or not token:find("^nameplate") then return nil end
+            ctl.plates[token] = ctl.plates[token] or newFrame("NamePlate")
+            return ctl.plates[token]
+        end,
         GetNamePlates = function()
             local list = {}
             for token in pairs(ctl.units) do

@@ -2,6 +2,15 @@
 
 All notable changes to Tanksign. Versions follow semantic versioning; 0.x releases are pre-releases.
 
+## 0.5.0 (unreleased): right-click cross and marker icons
+
+- Right-click a row puts the cross (red X) on that mob; left-click still puts the skull. Both
+  markers are settings (`/ts marker`, `/ts rightmarker`, options page).
+- Marker icons on the row and above the nameplate of mobs you marked with Tanksign. Forever hides
+  a marked unit's marker from addons, so Tanksign remembers its own clicks and clears an icon when
+  the client shows the mob as unmarked or its nameplate goes away. Markers placed by others are not
+  shown. `/ts icons` toggles the icons.
+
 ## 0.4.0 (unreleased): stage 5, options and profiles
 
 - Options page (Esc > Options > AddOns > Tanksign, or `/ts options`) in the Plain palette, with the

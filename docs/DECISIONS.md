@@ -139,3 +139,16 @@ Alerts fire only for markers YOU place (row PostClick, key PostClick); markers p
 invisible to addons. Marking rights follow Blizzard's rule (party: anyone; raid: leader, assistants).
 From the brief, impossible and explained on the options page: clear skull on disable or combat end,
 "skull moved" alerts, the glow on the marked nameplate.
+
+## D-013 Right-click cross and marker icons from our own clicks (2026-11-06)
+
+Austin asked for right-click = cross, and a skull / red X above the nameplates of the marked mobs.
+Right-click is `type2=raidtarget action2=set marker2=<setting, default 7>` on the same secure rows.
+Icons: Forever returns a secret from `GetRaidTargetIndex` for a marked unit and plain nil for an
+unmarked one, so an addon cannot learn which marker a mob carries (this is also why nameplate
+addons show no raid icons on Forever). Tanksign remembers which nameplate token got which marker
+from its own clicks (Core/MarkLogic.lua, pure), clears that when the unit reads as unmarked or the
+token's plate is removed, and learns a marker only when the client shows it plainly. Icons are drawn
+on the row and as a texture parented to the nameplate frame; if the client refuses textures on
+nameplates, that part turns itself off once with a message. Limits: markers placed by other
+players, and by the tank's-target key, are not shown.
