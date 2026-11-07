@@ -24,6 +24,8 @@ Settings.DEFAULTS = {
     scale = 1.0,
     alpha = 1.0,
     maxRows = 8,
+    showTags = true,         -- E elite, R rare, B boss, C caster (mana)
+    dimTrivial = true,       -- dim critters, totems and pets
     debug = false,
 }
 

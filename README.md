@@ -4,7 +4,7 @@
 you, each with a live health bar, shows which ones the tank holds, and puts the skull on a mob with
 one click. It is an addon for World of Warcraft, built for **WoW Forever**.
 
-> **Status: 0.2.0, in development.** The panel and click-to-mark are confirmed in game on Forever
+> **Status: 0.3.0, in development.** The panel and click-to-mark are confirmed in game on Forever
 > (dungeon, in combat). See [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## Why it is a panel and not automatic
@@ -22,6 +22,10 @@ Forever client does not allow that, and Tanksign does not try to get around it:
 - **Left-click** a row: put the skull (or your chosen marker) on that mob. Works in combat.
 - Bar colors: **green**, a tank holds it; **red**, in combat and no tank holds it (loose);
   **grey**, not pulled yet, or the client keeps the threat secret.
+- Tags before the name: **E** elite, **R** rare, **B** boss, **C** caster (uses mana).
+- Critters, totems and pets are dimmed. Inside instances the client hides the creature type, so
+  there only pets are dimmed.
+- Your current target's row has a gold border.
 - The skull button in the panel's title bar turns Tanksign on and off (green on, red off).
   Drag the title bar to move the panel (out of combat, when unlocked).
 
@@ -42,6 +46,7 @@ still works.
 | `/ts marker <1-8 or name>` | the marker a click places (default skull) |
 | `/ts rows <1-15>`, `/ts scale <0.5-2>` | panel size |
 | `/ts group` | only active in a group or instance |
+| `/ts tags`, `/ts dim` | row tags, and dimming of critters, totems and pets (toggles) |
 | `/ts reset`, `/ts reset position` | defaults, or only the panel position |
 | `/ts debug` | explain each row in chat |
 | `/ts probe` | API report for troubleshooting (`/ts probe help`) |
@@ -50,7 +55,9 @@ still works.
 
 - **Rows come from nameplates.** A mob without a visible enemy nameplate has no row. Keep enemy
   nameplates on (Esc > Options > Nameplates) and in range.
-- **Rows are not sorted by health**, because health is secret. They follow nameplate order.
+- **Rows are not sorted by health**, because health is secret. They follow nameplate order. For the
+  same reason there is no "ignore mobs below X% health" option, and no "within 90% of top threat"
+  option (exact threat values are secret on nameplates).
 - **Combat lockdown.** In combat the panel cannot be moved, hidden or rebuilt. Turning Tanksign off
   in combat fades the panel and stops its updates at once; it hides when the fight ends. Changing
   the marker or the tank applies after the fight.

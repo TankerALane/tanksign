@@ -96,6 +96,14 @@ COMMANDS["scale"] = function(rest)
     if n then setSetting("scale", n, L.SCALE_SET, n) else ns.Log.Warn(L.SCALE_USAGE) end
 end
 
+COMMANDS["tags"] = function()
+    setSetting("showTags", not ns.db.settings.showTags, ns.db.settings.showTags and L.TAGS_OFF or L.TAGS_ON)
+end
+
+COMMANDS["dim"] = function()
+    setSetting("dimTrivial", not ns.db.settings.dimTrivial, ns.db.settings.dimTrivial and L.DIM_OFF or L.DIM_ON)
+end
+
 COMMANDS["group"] = function()
     setSetting("onlyInGroup", not ns.db.settings.onlyInGroup,
         ns.db.settings.onlyInGroup and L.GROUP_OFF or L.GROUP_ON)

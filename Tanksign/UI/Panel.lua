@@ -121,8 +121,11 @@ local function buildRow(i)
     W.Fill(row.held, "good")
     row.held:Hide()
     row.edges = W.Border(row, "border", 1)
+    -- Tags sit in their own font string: the name may be secret and cannot be joined.
+    row.tag = W.Text(row.bar, "small", "heading")
+    row.tag:SetPoint("LEFT", 4, 0)
     row.name = W.Text(row.bar, "small", "text")
-    row.name:SetPoint("LEFT", 4, 0)
+    row.name:SetPoint("LEFT", row.tag, "RIGHT", 3, 0)
     row.name:SetPoint("RIGHT", -52, 0)
     row.name:SetWordWrap(false)
     row.hp = W.Text(row.bar, "small", "text")
@@ -241,6 +244,24 @@ local function updateRow(row)
     else
         color(row.bar, "rule"); row.held:Hide()
     end
+    local s = ns.db.settings
+    local typeId
+    local okT, _, tid = pcall(_G.UnitCreatureType, u)
+    if okT then typeId = Compat.Plain(tid) end
+    local facts = {
+        classification = Compat.Plain(_G.UnitClassification(u)),
+        powerType = Compat.Plain((_G.UnitPowerType(u))),
+        creatureTypeId = typeId,
+        playerControlled = Compat.Plain(_G.UnitPlayerControlled(u)),
+    }
+    row.tag:SetText(s.showTags and table.concat(ns.RowLogic.Tags(facts), " ") or "")
+    local dim, why = false, nil
+    if s.dimTrivial then dim, why = ns.RowLogic.Dim(facts) end
+    if dim ~= row.lastDim then
+        if dim then ns.Log.Debug("%s dimmed: %s", u, why) end
+        row.lastDim = dim
+    end
+    row.bar:SetAlpha(dim and 0.4 or 1)
     local isTarget = Compat.Plain(_G.UnitIsUnit(u, "target")) == true
     for _, e in ipairs(row.edges) do W.Fill(e, isTarget and "accent" or "border") end
 end

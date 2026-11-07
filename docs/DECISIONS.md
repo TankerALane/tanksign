@@ -119,3 +119,12 @@ nameplate1); a "target the tank's target" key is added only if Austin sees it wo
 Left-click marking is confirmed by eye in a dungeon, in combat.
 Key bindings "Skull the tank's target" and "Skull the mob under the mouse" confirmed working in
 game by Austin (2026-11-06).
+
+## D-011 Stage 3 row details (2026-11-06)
+
+Tags come from `UnitClassification` and `UnitPowerType` (both readable in the dungeon probe).
+Dimming uses the creature type id (second return of `UnitCreatureType`: 8 critter, 11 totem,
+12 and 14 pets), which is locale-independent but secret inside instances, plus
+`UnitPlayerControlled` (readable). Dimming changes only the alpha of the row's bar (not a
+protected frame), so it works in combat. Left out as impossible: health-threshold filtering and
+the "within 90% of top threat" option (detailed threat is secret on nameplate tokens).

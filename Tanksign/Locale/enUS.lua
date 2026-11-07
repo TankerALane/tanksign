@@ -23,6 +23,8 @@ L.HELP_LINES = {
     "/ts marker <1-8 or name>  - marker that a click places (default skull)",
     "/ts rows <1-15>  - most rows shown   /ts scale <0.5-2>",
     "/ts group  - only active in a group or instance (toggle)",
+    "/ts tags  - E elite, R rare, B boss, C caster tags on rows (toggle)",
+    "/ts dim  - dim critters, totems and pets (toggle)",
     "/ts reset [position]  - default settings, or only the panel position",
     "/ts debug  - explain each row decision in chat",
     "/ts diag  - show what the client did with the panel rows (for bug reports)",
@@ -55,6 +57,10 @@ L.ROWS_SET = "Up to %d rows."
 L.ROWS_USAGE = "Usage: /ts rows <1-15>"
 L.SCALE_SET = "Panel scale %.2f."
 L.SCALE_USAGE = "Usage: /ts scale <0.5-2>"
+L.TAGS_ON = "Row tags on: E elite, R rare, B boss, C caster."
+L.TAGS_OFF = "Row tags off."
+L.DIM_ON = "Critters, totems and pets are dimmed (where the client lets Tanksign tell)."
+L.DIM_OFF = "No dimming."
 L.GROUP_ON = "Only active in a group or instance."
 L.GROUP_OFF = "Active everywhere, also solo."
 L.POSITION_RESET = "Panel position reset."

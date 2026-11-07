@@ -155,10 +155,10 @@ function M.new(opts)
     env.UnitHealth = function(u) local x = unit(u) return x and x.hp or 0 end
     env.UnitHealthMax = function(u) local x = unit(u) return x and x.hpMax or 0 end
     env.UnitClassification = function(u) local x = unit(u) return x and x.class or "normal" end
-    env.UnitCreatureType = function(u) local x = unit(u) return x and x.ctype end
-    env.UnitPlayerControlled = function() return false end
+    env.UnitCreatureType = function(u) local x = unit(u) if x then return x.ctype, x.ctypeId end end
+    env.UnitPlayerControlled = function(u) local x = unit(u) return x ~= nil and x.pc == true end
     env.UnitIsPlayer = function(u) return u == "player" end
-    env.UnitPowerType = function() return 0, "MANA" end
+    env.UnitPowerType = function(u) local x = unit(u) return x and x.powerType or 1, "RAGE" end
     env.UnitIsUnit = function(a, b)
         if a == b then return true end
         local x, y = unit(a), unit(b)

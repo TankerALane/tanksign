@@ -112,3 +112,22 @@ H.test("panel state: out of combat applies, in combat only fades and defers", fu
     st = A.PanelState(s, true, true, true)
     H.eq(st.rows, true); H.eq(st.faded, false)
 end)
+
+H.test("row tags: boss, rare, elite, caster; unknown facts add nothing", function()
+    local R = H.pureNamespace().RowLogic
+    H.eq(table.concat(R.Tags({ classification = "elite", powerType = 0 }), " "), "E C")
+    H.eq(table.concat(R.Tags({ classification = "rareelite" }), " "), "R E")
+    H.eq(table.concat(R.Tags({ classification = "worldboss", powerType = 1 }), " "), "B")
+    H.eq(table.concat(R.Tags({ classification = "normal", powerType = 3 }), " "), "")
+    H.eq(#R.Tags({}), 0)
+end)
+
+H.test("row dimming: critters, wild and non-combat pets, totems, player pets", function()
+    local R = H.pureNamespace().RowLogic
+    H.eq(select(2, R.Dim({ creatureTypeId = 8 })), "critter")
+    H.eq(select(2, R.Dim({ creatureTypeId = 14 })), "critter")
+    H.eq(select(2, R.Dim({ creatureTypeId = 11 })), "totem")
+    H.eq(select(2, R.Dim({ creatureTypeId = 7, playerControlled = true })), "pet")
+    H.eq((R.Dim({ creatureTypeId = 7 })), false)
+    H.eq((R.Dim({})), false, "secret creature type: no dimming")
+end)

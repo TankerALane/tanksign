@@ -2,6 +2,14 @@
 
 All notable changes to Tanksign. Versions follow semantic versioning; 0.x releases are pre-releases.
 
+## 0.3.0 (unreleased): stage 3, row details
+
+- Row tags: E elite, R rare, B boss, C caster (uses mana). `/ts tags` toggles them.
+- Critters, totems and pets are dimmed (`/ts dim`). Uses creature type ids, so it works on any
+  client language; inside instances the creature type is secret, so only pets are dimmed there.
+- Not possible on Forever and left out: ignoring mobs below a health threshold (health is secret)
+  and counting mobs within 90% of top threat (threat values are secret on nameplates).
+
 ## 0.2.0 (unreleased): stage 2, the mob panel
 
 Forever does not let addons read enemy health or place markers, so Tanksign is now a click-to-mark
