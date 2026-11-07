@@ -28,7 +28,7 @@ local function eventFrameFor(ctl, event)
     for _, f in ipairs(ctl.frames) do if f._events[event] and f._scripts.OnUpdate then return f end end
 end
 
-H.test("40 secure rows: left click marks, right click targets, driven by hostile plates", function()
+H.test("40 secure rows: left click marks, driven by nameplate unit watch", function()
     local env, ctl = boot()
     local rows = ctl.ns.Panel.rows
     H.eq(#rows, 40)
@@ -36,7 +36,7 @@ H.test("40 secure rows: left click marks, right click targets, driven by hostile
     H.eq(rows[7]._attrs.type1, "raidtarget")
     H.eq(rows[7]._attrs.action1, "set")
     H.eq(rows[7]._attrs.marker1, 8)
-    H.eq(rows[7]._attrs.type2, "target")
+    H.eq(rows[7]._attrs.type2, nil, "no right-click targeting on Forever")
     H.eq(#ctl.drivers, 0, "no macro-condition drivers: Forever answers 0 for nameplates")
     H.eq(#ctl.watches, 40)
     H.ok(ctl.watches[3].frame == rows[3] and ctl.watches[3].asState == true)

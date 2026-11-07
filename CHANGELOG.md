@@ -9,8 +9,11 @@ panel (docs/DECISIONS.md D-006 to D-008).
 
 - Mob panel: one row per hostile, living enemy nameplate with its name and a live health bar. Green
   bar: a tank holds it. Red: in combat and no tank holds it. Grey: not pulled yet, or unknown.
-- Left-click a row puts the skull (or the chosen marker) on that mob; right-click targets it. Both
-  are secure clicks and work in combat.
+- Left-click a row puts the skull (or the chosen marker) on that mob. It is a secure click and works
+  in combat (confirmed in a Forever dungeon). Right-click targeting was tried and removed: Forever
+  ignores secure targeting through nameplate tokens.
+- Rows follow Blizzard's unit watch (Forever answers 0 to `[@nameplateN,harm]` conditions).
+- Session log saved on /reload or logout, and `/ts diag`, for bug reports.
 - Tank detection: role, then Main Tank, then a fixed name (`/ts tank <Name>`), then top threat.
 - One enabled flag for `/ts on|off|toggle`, the skull button on the panel and the "Toggle Tanksign"
   key binding. Off means no events and no updates; in combat the panel fades and hides after the fight.

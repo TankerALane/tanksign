@@ -63,7 +63,6 @@ L.RESET_DONE = "Settings reset to defaults."
 L.MARKER_NAMES = { [1] = "Star", [2] = "Circle", [3] = "Diamond", [4] = "Triangle", [5] = "Moon", [6] = "Square",
     [7] = "Cross", [8] = "Skull" }
 L.ROW_TIP_LEFT = "Left-click: put the marker on this mob"
-L.ROW_TIP_RIGHT = "Right-click: target this mob"
 L.TOGGLE_TIP_ON = "Tanksign is ON. Click to turn it off."
 L.TOGGLE_TIP_OFF = "Tanksign is OFF. Click to turn it on."
 L.TOGGLE_TIP_DRAG = "Drag the title bar to move the panel (when unlocked, out of combat)."

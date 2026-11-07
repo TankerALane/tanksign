@@ -108,3 +108,12 @@ left-clicks run in combat. `/ts diag` on a living enemy plate: `[@nameplate1]`=1
 seems to refuse unit-identity conditions on nameplate tokens. Right-click (`type2=target`,
 unit `nameplateN`) reached the row ~20 times, nothing was blocked, and the target did not change.
 `/ts probe buttons` now tries `/target nameplate1`, `/target [@nameplate1]` and `/assist party1`.
+
+## D-010 No targeting from the panel (2026-11-06)
+
+`/ts probe buttons`, out of combat, nameplate1 visible: `type=target unit=nameplate1`,
+`/target nameplate1` and `/target [@nameplate1]` all left nameplate1 untargeted, with nothing
+blocked; the panel's right-click (`type2=target`) did the same in ~20 clicks in and out of combat.
+Right-click targeting is removed. `/assist party1` was inconclusive (the check only looked at
+nameplate1); a "target the tank's target" key is added only if Austin sees it work.
+Left-click marking is confirmed by eye in a dungeon, in combat.

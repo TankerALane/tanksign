@@ -3,7 +3,8 @@
 --
 -- Rows are SECURE buttons, one per nameplate token (nameplate1..40):
 --   left click  -> type "raidtarget", action "set", marker <setting>: Blizzard's code marks the mob
---   right click -> type "target": Blizzard's code targets the mob
+-- (Right-click targeting was removed: Forever ignores every secure way of targeting
+-- through a nameplate token, docs/DECISIONS.md D-010.)
 -- A secure state driver per token reports "[@nameplateN,harm,nodead]" to a
 -- SecureHandlerStateTemplate header, and a restricted snippet stacks the visible rows.
 -- So rows appear, disappear and re-stack in combat without addon code touching a
@@ -100,7 +101,6 @@ local function buildRow(i)
     row:SetAttribute("type1", "raidtarget")
     row:SetAttribute("action1", "set")
     row:SetAttribute("marker1", ns.db.settings.marker)
-    row:SetAttribute("type2", "target")
     row:Hide()
     row.token = token
 
@@ -130,13 +130,13 @@ local function buildRow(i)
     row.hp:SetJustifyH("RIGHT")
 
     row:SetScript("OnEnter", function(self)
-        W.Tooltip(self, L.ADDON_TITLE, { L.ROW_TIP_LEFT, L.ROW_TIP_RIGHT })
+        W.Tooltip(self, L.ADDON_TITLE, { L.ROW_TIP_LEFT })
     end)
     row:SetScript("OnLeave", W.HideTooltip)
     -- Runs after Blizzard's secure click handler; only logs, never acts.
     row:SetScript("PostClick", function(self, button, down)
         if down then return end
-        ns.Log.Debug("row %s %s-click (in combat %s)", self.token, button == "RightButton" and "right" or "left",
+        ns.Log.Debug("row %s %s-click (in combat %s)", self.token, button == "LeftButton" and "left" or tostring(button),
             tostring(Compat.InCombat()))
     end)
 

@@ -4,8 +4,8 @@
 you, each with a live health bar, shows which ones the tank holds, and puts the skull on a mob with
 one click. It is an addon for World of Warcraft, built for **WoW Forever**.
 
-> **Status: 0.2.0, in development.** The panel works in the test suite and is waiting for in-game
-> testing. See [docs/ROADMAP.md](docs/ROADMAP.md).
+> **Status: 0.2.0, in development.** The panel and click-to-mark are confirmed in game on Forever
+> (dungeon, in combat). See [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## Why it is a panel and not automatic
 
@@ -19,8 +19,7 @@ Forever client does not allow that, and Tanksign does not try to get around it:
 
 ## Using it
 
-- **Left-click** a row: put the skull (or your chosen marker) on that mob.
-- **Right-click** a row: target that mob.
+- **Left-click** a row: put the skull (or your chosen marker) on that mob. Works in combat.
 - Bar colors: **green**, a tank holds it; **red**, in combat and no tank holds it (loose);
   **grey**, not pulled yet, or the client keeps the threat secret.
 - The skull button in the panel's title bar turns Tanksign on and off (green on, red off).
@@ -59,7 +58,11 @@ still works.
   rule); clicks from others do nothing.
 - Tanksign cannot see which mob carries the skull (that is secret too), so it cannot warn about a
   marker someone else moved.
-- There is no "target the skull mob" key: no macro option targets by raid marker.
+- **No targeting from the panel.** Forever ignores every secure way of targeting a mob through its
+  nameplate (tested: `type=target`, `/target nameplate1`, `/target [@nameplate1]`), and no macro
+  option targets by raid marker. Click the mob or its nameplate as usual.
+- A row also appears for a friendly nameplate if friendly nameplates are turned on: Forever does
+  not let secure code tell friend from foe on nameplates.
 
 ## Install
 
