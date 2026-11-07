@@ -219,6 +219,17 @@ function M.new(opts)
         if ctl.combat then error("RegisterUnitWatch in combat") end
         ctl.watches[#ctl.watches + 1] = { frame = frame, asState = asState }
     end
+    env.GetBindingKey = function(command) return ctl.bindings and ctl.bindings[command] end
+    env.SOUNDKIT = { IG_MAINMENU_OPTION_CHECKBOX_ON = 856 }
+    env.PlaySound = function(id) ctl.sounds = (ctl.sounds or 0) + 1 end
+    env.Settings = {
+        RegisterCanvasLayoutCategory = function(frame, name)
+            ctl.optionsFrame = frame
+            return { GetID = function() return 42 end, name = name }
+        end,
+        RegisterAddOnCategory = function() end,
+        OpenToCategory = function(id) ctl.openedOptions = id end,
+    }
     env.GetNumBindings = function() return 2 end
     env.GetBinding = function(i) return i == 1 and "RAIDTARGET8" or "TARGETNEARESTENEMY" end
 

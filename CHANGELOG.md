@@ -2,6 +2,19 @@
 
 All notable changes to Tanksign. Versions follow semantic versioning; 0.x releases are pre-releases.
 
+## 0.4.0 (unreleased): stage 5, options and profiles
+
+- Options page (Esc > Options > AddOns > Tanksign, or `/ts options`) in the Plain palette, with the
+  sections Core, Choosing the mob, Marking, Panel, Alerts, Key bindings, Profiles and Other. It
+  redraws when a setting changes anywhere (slash command, ON/OFF button, key binding).
+- Profiles: create (as a copy), switch, delete, reset; `/ts profile <name>`; optional automatic
+  switch to "Dungeon" and "Raid" profiles. Saved settings move into profiles (schema 3).
+- Optional sound and chat line when you place a marker with a row or a key.
+- Marking rights: in a raid without leader or assistant, the panel title says "can't mark" and a
+  one-time message explains.
+- Not possible on Forever and explained on the options page: clearing the skull, a "skull moved"
+  alert, and a glow on the marked nameplate (addons cannot see or remove markers).
+
 ## 0.3.0 (unreleased): stage 3, row details
 
 - Row tags: E elite, R rare, B boss, C caster (uses mana). `/ts tags` toggles them.

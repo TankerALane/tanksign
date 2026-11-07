@@ -128,3 +128,14 @@ Dimming uses the creature type id (second return of `UnitCreatureType`: 8 critte
 `UnitPlayerControlled` (readable). Dimming changes only the alpha of the row's bar (not a
 protected frame), so it works in combat. Left out as impossible: health-threshold filtering and
 the "within 90% of top threat" option (detailed threat is secret on nameplate tokens).
+
+## D-012 Stage 5: options, profiles, alerts (2026-11-06)
+
+Settings live in `TanksignDB.profiles[name]`, the active name in `TanksignDB.profile` (schema 3).
+At runtime `ns.db` is a proxy over `TanksignDB` whose `settings` field is the active profile, so the
+profile is never stored twice in the saved variables. Automatic switching picks "Dungeon" in party
+instances and "Raid" in raids when those profiles exist, else the profile last picked by hand.
+Alerts fire only for markers YOU place (row PostClick, key PostClick); markers placed by others are
+invisible to addons. Marking rights follow Blizzard's rule (party: anyone; raid: leader, assistants).
+From the brief, impossible and explained on the options page: clear skull on disable or combat end,
+"skull moved" alerts, the glow on the marked nameplate.

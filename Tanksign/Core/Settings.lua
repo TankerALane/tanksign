@@ -7,7 +7,7 @@ local _, ns = ...
 local Settings = {}
 ns.Settings = Settings
 
-Settings.SCHEMA = 2
+Settings.SCHEMA = 3
 
 Settings.TANK_SOURCES = { "auto", "role", "maintank", "name", "threat" }
 Settings.MARKERS = { 8, 7, 6, 5, 4, 3, 2, 1 } -- skull first
@@ -26,6 +26,8 @@ Settings.DEFAULTS = {
     maxRows = 8,
     showTags = true,         -- E elite, R rare, B boss, C caster (mana)
     dimTrivial = true,       -- dim critters, totems and pets
+    soundOnMark = false,     -- play a sound when you place a marker with Tanksign
+    chatOnMark = false,      -- print a chat line when you place a marker with Tanksign
     debug = false,
 }
 
@@ -63,7 +65,12 @@ function Settings.Migrate(db)
     if from < 2 and type(db.probe) == "table" then
         db.probe.combatSampling = false -- the probe build had it on; it is a debug tool now
     end
-    db.settings = Settings.Apply(db.settings)
+    -- Schema 3: settings live in named profiles (Core/Profiles.lua).
+    if from < 3 and type(db.settings) == "table" and type(db.profiles) ~= "table" then
+        db.profiles = { Default = db.settings }
+        db.profile = "Default"
+    end
+    db.settings = nil
     if from < Settings.SCHEMA then db.schema = Settings.SCHEMA end
     return db
 end

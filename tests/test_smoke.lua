@@ -20,9 +20,9 @@ end
 
 H.test("loads on Forever, creates only the allowed globals", function()
     local env, ctl = boot()
-    H.ok(ctl.chatText():find("v0.3.0 loaded", 1, true), ctl.chatText())
+    H.ok(ctl.chatText():find("v0.4.0 loaded", 1, true), ctl.chatText())
     H.eq(type(env.TanksignDB), "table")
-    H.eq(env.TanksignDB.settings.enabled, true)
+    H.eq(env.TanksignDB.profiles.Default.enabled, true)
     H.eq(table.concat(ctl.newGlobals(), ","), table.concat({ "BINDING_HEADER_TANKSIGN",
         "BINDING_NAME_CLICK TanksignSkullMouseover:LeftButton", "BINDING_NAME_CLICK TanksignSkullTankTarget:LeftButton",
         "BINDING_NAME_TANKSIGN_TOGGLE", "SLASH_TANKSIGN1", "SLASH_TANKSIGN2", "TanksignDB", "TanksignSkullMouseover",

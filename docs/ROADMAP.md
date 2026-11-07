@@ -6,9 +6,9 @@ Each stage ends with a commit, a test run, and an in-game checklist for Austin.
 |---|---|---|
 | 1 | Repo skeleton, TOC, probe, MIT license, README stub, sync script | done; three Forever probe reports read |
 | 2 | Mob panel core (D-007): secure rows per enemy nameplate, health bars, click to skull, right-click to target, tank detection and highlight, enable/disable (slash, button, keybind), keybinds for tank's target and mouseover | done: rows and left-click confirmed in game; right-click targeting impossible (D-010) |
-| 3 | Row details: elite/rare/boss/caster tags, dim critters/totems/pets, target border | built, waiting for in-game test |
+| 3 | Row details: elite/rare/boss/caster tags, dim critters/totems/pets, target border | done (tags, target border and toggles confirmed; dimming not yet seen) |
 | 4 | (dropped: Forever allows no addon targeting, not even secure clicks on nameplate tokens) | |
-| 5 | Options panel and the remaining settings, alerts, profiles | |
+| 5 | Options panel and the remaining settings, alerts, profiles | built, waiting for in-game test |
 | 6 | Icon and logo, README with screenshots, CHANGELOG, release packaging | |
 
 ## Open questions the probe answers

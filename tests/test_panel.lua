@@ -78,13 +78,13 @@ H.test("toggle out of combat: inert when off, back on when on", function()
     local header = ctl.ns.Panel.rows[1]._parent
     ctl.slash("off")
     H.ok(ctl.chatText():find("DISABLED", 1, true))
-    H.eq(env.TanksignDB.settings.enabled, false)
+    H.eq(env.TanksignDB.profiles.Default.enabled, false)
     H.eq(header._attrs.tsActive, 0)
     H.eq(eventFrameFor(ctl, "UNIT_HEALTH"), nil, "no unit events while off")
     H.eq(env.TanksignSkullMouseover._attrs.unit, nil, "keys do nothing while off")
     env.SlashCmdList.TANKSIGN("toggle") -- what the key binding runs
     H.ok(ctl.chatText():find("ENABLED", 1, true))
-    H.eq(env.TanksignDB.settings.enabled, true)
+    H.eq(env.TanksignDB.profiles.Default.enabled, true)
     H.eq(header._attrs.tsActive, 1)
     H.ok(eventFrameFor(ctl, "UNIT_HEALTH"), "unit events back")
     H.eq(env.TanksignSkullMouseover._attrs.unit, "mouseover")
@@ -130,7 +130,7 @@ H.test("marker setting reaches every row and both keys", function()
     H.eq(env.TanksignSkullMouseover._attrs.marker, 7)
     ctl.slash("marker 9")
     H.ok(ctl.chatText():find("Usage: /ts marker", 1, true))
-    H.eq(env.TanksignDB.settings.marker, 7)
+    H.eq(env.TanksignDB.profiles.Default.marker, 7)
 end)
 
 H.test("only in group: solo is inactive", function()
@@ -164,10 +164,10 @@ H.test("status, tank name, rows, scale, reset commands", function()
     ctl.slash("rows 4")
     H.eq(ctl.ns.Panel.rows[1]._parent._attrs.tsMaxRows, 4)
     ctl.slash("scale 1.25")
-    H.eq(env.TanksignDB.settings.scale, 1.25)
+    H.eq(env.TanksignDB.profiles.Default.scale, 1.25)
     ctl.slash("reset")
-    H.eq(env.TanksignDB.settings.tankSource, "auto")
-    H.eq(env.TanksignDB.settings.maxRows, 8)
+    H.eq(env.TanksignDB.profiles.Default.tankSource, "auto")
+    H.eq(env.TanksignDB.profiles.Default.maxRows, 8)
 end)
 
 H.test("logout saves a session record for reading from SavedVariables", function()
@@ -177,7 +177,7 @@ H.test("logout saves a session record for reading from SavedVariables", function
     ctl.slash("probe mark") -- no target: nothing blocked
     ctl.fire("PLAYER_LOGOUT")
     local s = env.TanksignDB.lastSession
-    H.eq(s.version, "0.3.0")
+    H.eq(s.version, "0.4.0")
     H.eq(s.tanks, "party1")
     H.eq(s.panelBuilt, true)
     H.eq(s.blocked, 0)
@@ -221,5 +221,75 @@ H.test("rows: tags for elite and caster, dimming for critters and pets, secret t
     ctl.fire("UNIT_THREAT_LIST_UPDATE", "nameplate1")
     H.eq(rows[1].tag._text, "")
     H.eq(rows[2].bar._alpha, 1)
-    H.eq(env.TanksignDB.settings.showTags, false)
+    H.eq(env.TanksignDB.profiles.Default.showTags, false)
+end)
+
+H.test("options page registers, opens, and follows changes made elsewhere", function()
+    local env, ctl = boot()
+    H.ok(ctl.optionsFrame, "canvas registered")
+    ctl.slash("options")
+    H.eq(ctl.openedOptions, 42)
+    -- the Enable toggle redraws after /ts off
+    local function findToggle(label)
+        for _, f in ipairs(ctl.frames) do
+            if f.text and type(f.text._text) == "string" and f.text._text:find(label, 1, true) then return f end
+        end
+    end
+    H.ok(findToggle("[x] Enable Tanksign"))
+    ctl.slash("off")
+    H.ok(findToggle("[ ] Enable Tanksign"), "options redraw after a slash change")
+    local t = findToggle("[ ] Enable Tanksign")
+    t._scripts.OnClick(t)
+    H.eq(ctl.ns.db.settings.enabled, true, "the checkbox drives the same flag")
+    H.ok(ctl.chatText():find("ENABLED", 1, true))
+    H.eq(#ctl.blockedCalls, 0)
+    H.ok(env)
+end)
+
+H.test("profiles from slash: create a copy, switch, list; settings follow the profile", function()
+    local env, ctl = boot()
+    ctl.slash("marker cross")
+    ctl.slash("profile Dungeon")
+    H.eq(env.TanksignDB.profile, "Dungeon")
+    H.eq(ctl.ns.db.settings.marker, 7, "copied")
+    ctl.slash("marker moon")
+    H.eq(env.TanksignDB.profiles.Dungeon.marker, 5)
+    H.eq(env.TanksignDB.profiles.Default.marker, 7)
+    ctl.slash("profile Default")
+    H.eq(ctl.ns.Panel.rows[1]._attrs.marker1, 7, "rows follow the active profile")
+    ctl.slash("profile list")
+    H.ok(ctl.chatText():find("All profiles: Default, Dungeon", 1, true), ctl.chatText())
+    H.eq(env.TanksignDB.settings, nil, "settings are not stored twice")
+end)
+
+H.test("automatic profile in a dungeon", function()
+    local env, ctl = boot()
+    ctl.slash("profile Dungeon")
+    ctl.slash("profile Default")
+    env.TanksignDB.autoProfile = true
+    env.IsInInstance = function() return true, "party" end
+    ctl.fire("PLAYER_ENTERING_WORLD")
+    H.eq(env.TanksignDB.profile, "Dungeon")
+    env.IsInInstance = function() return false, "none" end
+    ctl.fire("PLAYER_ENTERING_WORLD")
+    H.eq(env.TanksignDB.profile, "Default")
+end)
+
+H.test("alerts after a mark; one-time warning without rights in a raid", function()
+    local env, ctl = boot()
+    mob(ctl, "nameplate1", { name = "Kobold Miner" })
+    ctl.slash("profile Default")
+    ctl.ns.db.settings.soundOnMark = true
+    ctl.ns.db.settings.chatOnMark = true
+    local row = ctl.ns.Panel.rows[1]
+    row:Click("LeftButton", false)
+    H.eq(ctl.sounds, 1)
+    H.ok(ctl.chatText():find("Skull on Kobold Miner.", 1, true), ctl.chatText())
+    env.IsInRaid = function() return true end
+    ctl.leader, ctl.assist = false, false
+    row:Click("LeftButton", false)
+    row:Click("LeftButton", false)
+    local _, count = ctl.chatText():gsub("only the leader and assistants can", "")
+    H.eq(count, 1, "warned once")
+    H.eq(ctl.sounds, 1, "no sound when the mark cannot happen")
 end)

@@ -27,3 +27,11 @@ function ActiveLogic.PanelState(settings, active, inCombat, currentlyShown)
     end
     return { show = wantShown, rows = wantRows, faded = false, deferred = false }
 end
+
+-- Blizzard's marking rule: solo and in a party anyone may place markers; in a raid only
+-- the leader and assistants (or everyone, when "everyone is assistant" is on).
+-- facts: { inRaid, leader, assist, everyoneAssist } (unknown = nil counts as allowed).
+function ActiveLogic.CanMark(facts)
+    if facts.inRaid ~= true then return true end
+    return facts.leader ~= false or facts.assist == true or facts.everyoneAssist == true
+end

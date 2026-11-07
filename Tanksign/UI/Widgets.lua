@@ -113,3 +113,124 @@ end
 function W.HideTooltip()
     if _G.GameTooltip then _G.GameTooltip:Hide() end
 end
+
+-- A section heading with a rule under it (Fellowship Ledger's settings style).
+function W.Heading(parent, text)
+    local fs = W.Text(parent, "large", "heading")
+    fs:SetText(text)
+    local rule = W.Rule(parent, "rule")
+    rule:SetPoint("TOPLEFT", fs, "BOTTOMLEFT", 0, -3)
+    rule:SetPoint("RIGHT", parent, "RIGHT", -16, 0)
+    return fs
+end
+
+-- A toggle drawn as "[x] Label" / "[ ] Label" (text, not color, shows the state), as in
+-- Fellowship Ledger. get() returns the value; set(v) stores it. t:Refresh() redraws.
+function W.Toggle(parent, label, get, set, width)
+    local t = CreateFrame("Button", nil, parent)
+    t:SetSize(width or 360, 20)
+    t.text = W.Text(t, "body", "text")
+    t.text:SetPoint("LEFT")
+    function t:Refresh()
+        self.text:SetText((get() and "[x] " or "[ ] ") .. label)
+    end
+    t:SetScript("OnClick", function(self)
+        set(not get())
+        self:Refresh()
+    end)
+    t:Refresh()
+    return t
+end
+
+-- "Label: [ value ]" button that steps through choices. getText() shows the current
+-- value; onClick advances it.
+function W.Cycle(parent, label, getText, onClick, width)
+    local f = CreateFrame("Frame", nil, parent)
+    f:SetSize(360, 22)
+    f.label = W.Text(f, "body", "text")
+    f.label:SetPoint("LEFT")
+    f.label:SetText(label)
+    f.button = W.Button(f, "", width or 150, 20, function() onClick(); f:Refresh() end)
+    f.button:SetPoint("LEFT", 170, 0)
+    function f:Refresh() self.button.text:SetText(getText()) end
+    f:Refresh()
+    return f
+end
+
+-- A horizontal slider in the Plain palette: track, gold thumb, value text.
+function W.Slider(parent, label, lo, hi, step, get, set, fmt)
+    local f = CreateFrame("Frame", nil, parent)
+    f:SetSize(360, 22)
+    f.label = W.Text(f, "body", "text")
+    f.label:SetPoint("LEFT")
+    f.label:SetText(label)
+    local s = CreateFrame("Slider", nil, f)
+    s:SetOrientation("HORIZONTAL")
+    s:SetSize(150, 14)
+    s:SetPoint("LEFT", 170, 0)
+    s:SetMinMaxValues(lo, hi)
+    s:SetValueStep(step)
+    s:SetObeyStepOnDrag(true)
+    local track = s:CreateTexture(nil, "BACKGROUND")
+    track:SetPoint("LEFT")
+    track:SetPoint("RIGHT")
+    track:SetHeight(4)
+    W.Fill(track, "buttonBg")
+    local thumb = s:CreateTexture(nil, "ARTWORK")
+    thumb:SetSize(8, 14)
+    W.Fill(thumb, "accent")
+    s:SetThumbTexture(thumb)
+    f.value = W.Text(f, "small", "muted")
+    f.value:SetPoint("LEFT", s, "RIGHT", 8, 0)
+    f.slider = s
+    local updating = false
+    s:SetScript("OnValueChanged", function(_, v)
+        if updating then return end
+        v = math.floor(v / step + 0.5) * step
+        set(v)
+        f.value:SetText(string.format(fmt or "%.2f", v))
+    end)
+    function f:Refresh()
+        updating = true
+        s:SetValue(get())
+        updating = false
+        f.value:SetText(string.format(fmt or "%.2f", get()))
+    end
+    f:Refresh()
+    return f
+end
+
+-- A one-line text box with the panel background and a border. onEnter(text) on Enter.
+function W.EditBox(parent, width, onEnter)
+    local e = CreateFrame("EditBox", nil, parent)
+    e:SetSize(width or 150, 20)
+    e:SetAutoFocus(false)
+    e:SetFontObject(_G.GameFontHighlightSmall)
+    e:SetTextInsets(5, 5, 0, 0)
+    W.Background(e, "panel")
+    W.Border(e, "buttonBorder", 1)
+    e:SetScript("OnEnterPressed", function(self)
+        self:ClearFocus()
+        if onEnter then onEnter(self:GetText()) end
+    end)
+    e:SetScript("OnEscapePressed", function(self) self:ClearFocus() end)
+    return e
+end
+
+-- A vertical scroll area: returns scrollFrame, content. Mouse wheel scrolls.
+function W.ScrollArea(parent)
+    local scroll = CreateFrame("ScrollFrame", nil, parent)
+    local content = CreateFrame("Frame", nil, scroll)
+    content:SetSize(10, 10)
+    scroll:SetScrollChild(content)
+    scroll:EnableMouseWheel(true)
+    scroll:SetScript("OnMouseWheel", function(self, delta)
+        local range = self:GetVerticalScrollRange() or 0
+        local new = (self:GetVerticalScroll() or 0) - delta * 40
+        if new < 0 then new = 0 end
+        if new > range then new = range end
+        self:SetVerticalScroll(new)
+    end)
+    scroll:SetScript("OnSizeChanged", function(_, w) content:SetWidth(w or 10) end)
+    return scroll, content
+end

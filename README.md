@@ -4,7 +4,7 @@
 you, each with a live health bar, shows which ones the tank holds, and puts the skull on a mob with
 one click. It is an addon for World of Warcraft, built for **WoW Forever**.
 
-> **Status: 0.3.0, in development.** The panel and click-to-mark are confirmed in game on Forever
+> **Status: 0.4.0, in development.** The panel and click-to-mark are confirmed in game on Forever
 > (dungeon, in combat). See [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## Why it is a panel and not automatic
@@ -29,6 +29,10 @@ Forever client does not allow that, and Tanksign does not try to get around it:
 - The skull button in the panel's title bar turns Tanksign on and off (green on, red off).
   Drag the title bar to move the panel (out of combat, when unlocked).
 
+All settings are on the options page: Esc > Options > AddOns > Tanksign, or `/ts options`. Settings
+live in profiles (for example "Dungeon" and "Raid"), and Tanksign can switch to them by itself when
+you enter a dungeon or raid. Optional sound or chat line when you place a marker.
+
 Key bindings (Esc > Options > Keybindings > AddOns > Tanksign): **Toggle Tanksign**, **Skull the
 tank's target**, **Skull the mob under the mouse**. Blizzard's own "Set skull on target" key also
 still works.
@@ -48,7 +52,10 @@ still works.
 | `/ts group` | only active in a group or instance |
 | `/ts tags`, `/ts dim` | row tags, and dimming of critters, totems and pets (toggles) |
 | `/ts reset`, `/ts reset position` | defaults, or only the panel position |
+| `/ts options` | open the options page |
+| `/ts profile [name \| list]` | switch to a profile, or create it as a copy of the current one |
 | `/ts debug` | explain each row in chat |
+| `/ts diag` | what the client did with the panel rows (for bug reports) |
 | `/ts probe` | API report for troubleshooting (`/ts probe help`) |
 
 ## Known limits
@@ -61,10 +68,10 @@ still works.
 - **Combat lockdown.** In combat the panel cannot be moved, hidden or rebuilt. Turning Tanksign off
   in combat fades the panel and stops its updates at once; it hides when the fight ends. Changing
   the marker or the tank applies after the fight.
-- **Marking permission.** In a group, only the leader and assistants can place markers (Blizzard's
-  rule); clicks from others do nothing.
+- **Marking permission.** In a raid only the leader and assistants can place markers (Blizzard's
+  rule). The panel title shows "can't mark" when you cannot, and a one-time chat message explains.
 - Tanksign cannot see which mob carries the skull (that is secret too), so it cannot warn about a
-  marker someone else moved.
+  marker someone else moved, glow the marked nameplate, or clear the skull for you.
 - **No targeting from the panel.** Forever ignores every secure way of targeting a mob through its
   nameplate (tested: `type=target`, `/target nameplate1`, `/target [@nameplate1]`), and no macro
   option targets by raid marker. Click the mob or its nameplate as usual.

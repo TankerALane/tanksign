@@ -9,9 +9,35 @@ local L = ns.L
 local Init = {}
 ns.Init = Init
 
+-- ns.db reads and writes TanksignDB, except `settings`, which is the active profile.
+-- (The profile is not stored twice in the saved variables: `settings` lives only here.)
 local function setupDB()
-    _G.TanksignDB = ns.Settings.Migrate(_G.TanksignDB)
-    ns.db = _G.TanksignDB
+    local saved = ns.Settings.Migrate(_G.TanksignDB)
+    _G.TanksignDB = saved
+    ns.db = setmetatable({ settings = ns.Profiles.Ensure(saved) }, {
+        __index = saved,
+        __newindex = saved,
+    })
+end
+
+-- Make `name` the active profile and redraw everything. manual = picked by the player.
+function Init.UseProfile(name, manual)
+    local settings = ns.Profiles.Switch(_G.TanksignDB, name)
+    if not settings then return false end
+    rawset(ns.db, "settings", settings)
+    if manual then _G.TanksignDB.manualProfile = name end
+    ns.Roster.Update()
+    ns.State.Refresh()
+    ns.Log.Info(L.PROFILE_ACTIVE_NOW, name)
+    return true
+end
+
+local function autoProfile()
+    local saved = _G.TanksignDB
+    if not saved.autoProfile then return end
+    local _, instanceType = ns.Roster.PlainCall("IsInInstance")
+    local want = ns.Profiles.ForInstance(saved, instanceType)
+    if want and want ~= saved.profile then Init.UseProfile(want, false) end
 end
 
 local function help()
@@ -114,7 +140,7 @@ COMMANDS["reset"] = function(rest)
         if ns.Panel.ResetPosition() then ns.Log.Info(L.POSITION_RESET) else ns.Log.Warn(L.NOT_IN_COMBAT) end
         return
     end
-    ns.db.settings = ns.Settings.Apply({})
+    ns.Profiles.Reset(ns.db.settings)
     ns.Roster.Update()
     ns.State.Refresh()
     ns.Log.Info(L.RESET_DONE)
@@ -125,6 +151,27 @@ COMMANDS["diag"] = function()
     ns.db.lastDiag = lines
     for _, l in ipairs(lines) do ns.Log.Info(l) end
     ns.Log.Info(L.DIAG_SAVED)
+end
+
+COMMANDS["options"] = function() ns.Options.Open() end
+COMMANDS["config"] = COMMANDS["options"]
+
+COMMANDS["profile"] = function(rest)
+    local db = _G.TanksignDB
+    if rest == "" or rest == "list" then
+        ns.Log.Info(L.PROFILE_LIST, db.profile, table.concat(ns.Profiles.List(db), ", "))
+        return
+    end
+    if db.profiles[rest] then
+        Init.UseProfile(rest, true)
+        return
+    end
+    local name, err = ns.Profiles.Create(db, rest)
+    if name then
+        Init.UseProfile(name, true)
+    else
+        ns.Log.Warn(L[err])
+    end
 end
 
 COMMANDS["probe"] = function(rest) ns.Probe.Command(rest) end
@@ -165,17 +212,21 @@ frame:SetScript("OnEvent", function(self, event, name)
         if not ok then ns.Compat.Disable("panel", ns.Compat.Describe(err)) end
         ok, err = pcall(ns.Keys.Init)
         if not ok then ns.Compat.Disable("keys", ns.Compat.Describe(err)) end
+        ok, err = pcall(ns.Options.Register)
+        if not ok then ns.Compat.Disable("options", ns.Compat.Describe(err)) end
         -- Group and instance changes decide "active" and who the tank is. These two
         -- events stay registered while disabled, only to keep the state current.
         self:RegisterEvent("GROUP_ROSTER_UPDATE")
         self:RegisterEvent("PLAYER_ROLES_ASSIGNED")
         self:RegisterEvent("PLAYER_ENTERING_WORLD")
+        self:RegisterEvent("PARTY_LEADER_CHANGED")
         self:RegisterEvent("PLAYER_LOGOUT")
         self:UnregisterEvent("PLAYER_LOGIN")
         ns.Log.Info(L.LOADED, ns.VERSION)
     elseif event == "PLAYER_LOGOUT" then
         Init.SaveSession()
     else
+        if event == "PLAYER_ENTERING_WORLD" then autoProfile() end
         ns.Roster.Update()
         ns.State.Refresh()
     end

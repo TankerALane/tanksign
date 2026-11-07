@@ -141,6 +141,7 @@ local function buildRow(i)
         if down then return end
         ns.Log.Debug("row %s %s-click (in combat %s)", self.token, button == "LeftButton" and "left" or tostring(button),
             tostring(Compat.InCombat()))
+        if button == "LeftButton" and ns.Alerts then ns.Alerts.OnMark(self.token) end
     end)
 
     step("frameref", header.SetFrameRef, header, "row" .. i, row)
@@ -297,7 +298,9 @@ local function drawToggle()
     local on = ns.db.settings.enabled
     local c = W.Color(on and "good" or "bad")
     toggleButton.icon:SetVertexColor(c[1], c[2], c[3], 1)
-    titleText:SetText(L.ADDON_TITLE .. "  " .. ns.Palette.Wrap(on and "good" or "bad", on and L.ON or L.OFF))
+    local text = L.ADDON_TITLE .. "  " .. ns.Palette.Wrap(on and "good" or "bad", on and L.ON or L.OFF)
+    if on and ns.Alerts and not ns.Alerts.CanMark() then text = text .. "  " .. ns.Palette.Wrap("bad", L.NO_RIGHTS_SHORT) end
+    titleText:SetText(text)
 end
 
 ----------------------------------------------------------------------------
