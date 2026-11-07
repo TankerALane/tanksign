@@ -172,3 +172,5 @@ both its skull and X. Austin chose this over keeping a possibly wrong icon (2026
 he asked for (square on skull: only the skull) is not possible, because the game does not say
 which marked mob changed. Costs: removing just one of your markers, or someone marking a mob with
 no nameplate on your screen, also clears both icons; one click restores them.
+Confirmed in game by Austin (2026-11-07): square or X put on the skull mob clears both icons; a marker
+on an unmarked mob leaves them; Tanksign's own clicks and keys never clear them.
