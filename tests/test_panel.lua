@@ -339,3 +339,26 @@ H.test("right-click marker setting reaches rows; icons can be turned off", funct
     H.eq(ctl.ns.Panel.rows[1].mark._shown, false, "row icon off")
     H.ok(not (ctl.plates.nameplate1 and ctl.plates.nameplate1.tanksignMark and ctl.plates.nameplate1.tanksignMark._shown))
 end)
+
+H.test("a fresh click keeps its icon while the server catches up", function()
+    local _, ctl = boot()
+    local a = mob(ctl, "nameplate1")
+    local row = ctl.ns.Panel.rows[1]
+    -- the server has not applied the marker yet: the unit still reads as unmarked
+    local real = row._attrs
+    row._attrs = setmetatable({ type1 = "none" }, { __index = real })
+    row:Click("LeftButton", false)
+    row._attrs = real
+    ctl.fire("UNIT_THREAT_LIST_UPDATE", "nameplate1")
+    H.eq(ctl.ns.Marks.Get("nameplate1"), 8, "kept during the grace time")
+    H.eq(row.mark._shown, true)
+    a.mark = 8 -- the server applies it; it reads as secret now
+    ctl.time = ctl.time + 1
+    ctl.fire("RAID_TARGET_UPDATE")
+    H.eq(ctl.ns.Marks.Get("nameplate1"), 8)
+    a.mark = nil -- later someone clears it
+    ctl.time = ctl.time + 10
+    ctl.fire("RAID_TARGET_UPDATE")
+    H.eq(ctl.ns.Marks.Get("nameplate1"), nil)
+    H.eq(row.mark._shown, false)
+end)

@@ -28,8 +28,8 @@ Forever client does not allow that, and Tanksign does not try to get around it:
 - Bar colors: **green**, a tank holds it; **red**, in combat and no tank holds it (loose);
   **grey**, not pulled yet, or the client keeps the threat secret.
 - Tags before the name: **E** elite, **R** rare, **B** boss, **C** caster (uses mana).
-- Critters, totems and pets are dimmed. Inside instances the client hides the creature type, so
-  there only pets are dimmed.
+- Pets and totems are dimmed. Critters normally get no nameplate at all, so they never appear.
+  Inside instances the client hides the creature type, so there only pets are dimmed.
 - Your current target's row has a gold border.
 - The skull button in the panel's title bar turns Tanksign on and off (green on, red off).
   Drag the title bar to move the panel (out of combat, when unlocked).

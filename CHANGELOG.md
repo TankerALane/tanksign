@@ -10,6 +10,9 @@ All notable changes to Tanksign. Versions follow semantic versioning; 0.x releas
   a marked unit's marker from addons, so Tanksign remembers its own clicks and clears an icon when
   the client shows the mob as unmarked or its nameplate goes away. Markers placed by others are not
   shown. `/ts icons` toggles the icons.
+- Fix (found in game): an icon vanished right after the click, because the server applies the
+  marker a moment later and the unit still read as unmarked. A fresh mark now has a 3-second grace
+  time, and Tanksign re-checks on RAID_TARGET_UPDATE.
 
 ## 0.4.0 (unreleased): stage 5, options and profiles
 

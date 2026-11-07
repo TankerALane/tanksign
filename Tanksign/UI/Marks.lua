@@ -68,7 +68,7 @@ local function refreshAll()
 end
 
 function Marks.Placed(marker, token)
-    ns.MarkLogic.Place(state, marker, token)
+    ns.MarkLogic.Place(state, marker, token, _G.GetTime())
     ns.Log.Debug("marker %d placed on %s (remembered)", marker, token)
     refreshAll()
     if ns.Panel then ns.Panel.UpdateAll() end
@@ -97,7 +97,7 @@ function Marks.Observe(token)
         if type(fn) == "function" then
             local ok, v = pcall(fn, token)
             if ok and not Compat.IsSecret(v) and type(v) == "number" then
-                ns.MarkLogic.Observe(state, token, v)
+                ns.MarkLogic.Observe(state, token, v, _G.GetTime())
                 refreshPlate(token)
             end
         end
@@ -108,7 +108,7 @@ function Marks.Observe(token)
     local seen
     if Compat.IsSecret(v) then seen = "hidden" elseif v == nil then seen = "none" else seen = v end
     local before = ns.MarkLogic.Get(state, token)
-    ns.MarkLogic.Observe(state, token, seen)
+    ns.MarkLogic.Observe(state, token, seen, _G.GetTime())
     if ns.MarkLogic.Get(state, token) ~= before then
         ns.Log.Debug("%s: marker %s no longer there (client says %s)", token, tostring(before), tostring(seen))
         refreshPlate(token)
