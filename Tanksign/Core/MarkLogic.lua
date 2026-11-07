@@ -8,8 +8,9 @@
 --           pending = { [token] = time placed } }
 -- A marker is on at most one unit (Blizzard moves it), so placing it again moves it here.
 -- A click reaches the server a moment later, so right after a click the unit still reads
--- as unmarked: a "none" answer is ignored while the mark is pending (GRACE seconds, or
--- until the client first shows the unit as marked).
+-- as unmarked: a "none" answer is ignored for GRACE seconds after the click. Only time ends
+-- the grace: a "marked" answer right after the click may still be the unit's OLD marker
+-- (cross replaced by skull), and the swap can read as unmarked for a moment.
 
 local _, ns = ...
 
@@ -51,12 +52,15 @@ end
 -- "hidden" (secret: some marker), or a plain number (the marker itself).
 function MarkLogic.Observe(state, token, seen, now)
     local placedAt = state.pending[token]
+    if placedAt and now and now - placedAt >= MarkLogic.GRACE then
+        state.pending[token] = nil
+        placedAt = nil
+    end
     if seen == "none" then
-        if placedAt and now and now - placedAt < MarkLogic.GRACE then return end -- not arrived yet
+        if placedAt then return end -- the click has not arrived yet
         clearToken(state, token)
         return
     end
-    state.pending[token] = nil -- the client shows a marker: the click arrived
     if type(seen) == "number" and seen >= 1 and seen <= 8 then
         if state.byToken[token] ~= seen then MarkLogic.Place(state, seen, token) end
     end

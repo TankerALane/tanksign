@@ -318,6 +318,7 @@ H.test("left-click skull, right-click cross: icons on rows and nameplates from o
     H.eq(ctl.plates.nameplate1.tanksignMark._shown, false)
     -- the client says nameplate2 is unmarked now (someone cleared it): memory clears
     b.mark = nil
+    ctl.time = ctl.time + 5 -- past the grace time after the click
     ctl.fire("UNIT_THREAT_LIST_UPDATE", "nameplate2")
     H.eq(ctl.ns.Marks.Get("nameplate2"), nil)
     H.eq(ctl.plates.nameplate2.tanksignMark._shown, false)
@@ -361,4 +362,32 @@ H.test("a fresh click keeps its icon while the server catches up", function()
     ctl.fire("RAID_TARGET_UPDATE")
     H.eq(ctl.ns.Marks.Get("nameplate1"), nil)
     H.eq(row.mark._shown, false)
+end)
+
+H.test("skull on top, cross on bottom, then skull on bottom: bottom keeps the skull icon", function()
+    local _, ctl = boot()
+    local top, bottom = mob(ctl, "nameplate1"), mob(ctl, "nameplate2")
+    local rows = ctl.ns.Panel.rows
+    rows[1]:Click("LeftButton", false)
+    rows[2]:Click("RightButton", false)
+    ctl.time = ctl.time + 5
+    ctl.fire("RAID_TARGET_UPDATE")
+    rows[2]:Click("LeftButton", false)
+    -- the server moves the skull: the top mob loses it, the bottom one swaps X for skull,
+    -- briefly reading as unmarked in between
+    top.mark = nil
+    local real = bottom.mark
+    bottom.mark = nil
+    ctl.time = ctl.time + 0.3
+    ctl.fire("RAID_TARGET_UPDATE")
+    bottom.mark = real
+    ctl.time = ctl.time + 0.3
+    ctl.fire("RAID_TARGET_UPDATE")
+    ctl.time = ctl.time + 5
+    ctl.fire("RAID_TARGET_UPDATE")
+    H.eq(ctl.ns.Marks.Get("nameplate2"), 8)
+    H.eq(rows[2].mark._shown, true, "bottom row shows the skull")
+    H.eq(ctl.ns.Marks.Get("nameplate1"), nil)
+    H.eq(rows[1].mark._shown, false)
+    H.eq(ctl.plates.nameplate2.tanksignMark._shown, true)
 end)
