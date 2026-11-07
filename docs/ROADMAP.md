@@ -9,7 +9,7 @@ Each stage ends with a commit, a test run, and an in-game checklist for Austin.
 | 3 | Row details: elite/rare/boss/caster tags, dim critters/totems/pets, target border | done (tags, target border and toggles confirmed; dimming not yet seen) |
 | 4 | (dropped: Forever allows no addon targeting, not even secure clicks on nameplate tokens) | |
 | 5 | Options panel and the remaining settings, alerts, profiles; right-click cross and marker icons (0.5.0) | done: confirmed in game |
-| 6 | Icon and logo, README with screenshots, CHANGELOG, release packaging | in progress: public repo created, CurseForge text ready |
+| 6 | Icon and logo, README with screenshots, CHANGELOG, release packaging | done: v0.9.0 beta released on GitHub and CurseForge (file 9488491) |
 
 ## Open questions the probe answers
 
