@@ -52,3 +52,8 @@ Stages 2 to 6 are on hold until Austin picks a replacement design. Probe round 2
 closest safe options: secure buttons the player clicks (a hardware event that runs Blizzard's
 secure marking code, like the built-in "set skull" key binding), health bars that display secret
 values without the addon reading them, and readable threat for the tank.
+
+Round 2 (same day): health is secret even out of combat; secret health can be shown in a status
+bar; hand-clicked secure buttons mark without being blocked; the marker index is secret once set,
+so the addon cannot see where the skull is (manual-mark protection and "skull already on the best
+mob" cannot be detected). Austin chooses the replacement design next.

@@ -49,8 +49,21 @@ healer, then party leader; mobs fought solo-style with the tank elsewhere):
 - `C_Secrets` exists with per-unit predicates (`ShouldUnitHealthMaxBeSecret`,
   `ShouldUnitThreatValuesBeSecret`, ...) and Blizzard ships a built-in `RAIDTARGET8` key binding.
 
-Probe round 2 (`/ts probe buttons`, group threat per member, `C_Secrets` per unit, status-bar
-display of secret health) answers whether a click-to-mark helper is possible.
+From `docs/verify-reports/forever-2026-11-06-probe2.txt` (round 2, out of combat only):
+
+- **Health is secret out of combat too** (mob not in combat, player not in combat), and
+  `C_Secrets.ShouldUnitHealthMaxBeSecret(unit)` answers true. Health is never readable.
+- **Secret health can be displayed:** `StatusBar:SetMinMaxValues`, `StatusBar:SetValue` and
+  `FontString:SetText` all accepted secret health without error.
+- **Secure buttons clicked by hand are not blocked:** the `type=raidtarget` button and the
+  `/tm 8` macro button on `target` raised no blocked event, and `RAID_TARGET_UPDATE` fired.
+- **The marker index becomes secret once a marker is set:** `GetRaidTargetIndex` was plain `nil`
+  before the click and SECRET after. An addon cannot read which mob carries the skull.
+- The tank's-target button did nothing because the tank had no target (`party3target` empty).
+- `C_Secrets.ShouldUnitThreatValuesBeSecret` takes `(unit, mobUnit)`;
+  `C_Secrets.CanCompareUnitTokens(unit, "target")` answered true; identity is not secret.
+- Still unknown: the tank's threat on mobs in combat (no fight with the tank in this round), and
+  secure clicks in combat (expected to work: secure buttons are built for combat).
 
 <!-- GENERATED:BEGIN (tools/gen_verify_doc.py) -->
 
