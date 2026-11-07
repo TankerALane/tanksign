@@ -152,3 +152,5 @@ token's plate is removed, and learns a marker only when the client shows it plai
 on the row and as a texture parented to the nameplate frame; if the client refuses textures on
 nameplates, that part turns itself off once with a message. Limits: markers placed by other
 players, and by the tank's-target key, are not shown.
+Confirmed in game by Austin (2026-11-07): right-click cross, and skull/X icons on rows and
+nameplates, including moving the skull onto the X-marked mob (after the time-only grace fix).
