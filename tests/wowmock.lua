@@ -25,7 +25,7 @@ local function noop() end
 function M.new(opts)
     opts = opts or {}
     local ctl = {
-        chat = {}, timers = {}, frames = {}, time = 100, combat = false, units = {}, leader = false,
+        chat = {}, timers = {}, frames = {}, blockedCalls = {}, drivers = {}, time = 100, combat = false, units = {}, leader = false,
         assist = false, group = false, groupSize = 0, markBlocked = false,
         interface = opts.interface or 16001, toc = opts.toc or "Tanksign/Tanksign_Forever.toc",
         secret = M.makeSecret(),
@@ -37,7 +37,12 @@ function M.new(opts)
 
     -- Frames -----------------------------------------------------------------
     local Frame = {}
-    local FrameMT = { __index = function(_, k) return Frame[k] or noop end }
+    -- Unknown methods are no-ops; unknown private fields ("_x") and lowercase fields are nil.
+    local FrameMT = { __index = function(_, k)
+        if Frame[k] then return Frame[k] end
+        if type(k) == "string" and k:find("^%u") then return noop end
+        return nil
+    end }
 
     local function newFrame(kind)
         local f = setmetatable({ _kind = kind, _scripts = {}, _events = {}, _attrs = {}, _shown = true }, FrameMT)
@@ -57,10 +62,29 @@ function M.new(opts)
     function Frame:CreateFontString() return newFrame("FontString") end
     function Frame:SetText(t) self._text = t end
     function Frame:GetText() return self._text end
-    function Frame:SetAttribute(k, v) self._attrs[k] = v end
+    -- Protected frames (secure templates and their parents) refuse changes in combat,
+    -- like ADDON_ACTION_BLOCKED on the real client.
+    local function guard(self, what)
+        if ctl.combat and self._protected then
+            ctl.blockedCalls[#ctl.blockedCalls + 1] = what
+            error("blocked in combat: " .. what, 3)
+        end
+    end
+    function Frame:SetAttribute(k, v) guard(self, "SetAttribute") self._attrs[k] = v end
+    function Frame:SetPoint(...) guard(self, "SetPoint") self._point = { ... } end
+    function Frame:ClearAllPoints() guard(self, "ClearAllPoints") end
+    function Frame:SetScale(v) guard(self, "SetScale") self._scale = v end
+    function Frame:SetShown(v) guard(self, "SetShown") self._shown = v and true or false end
+    function Frame:EnableMouse(v) guard(self, "EnableMouse") self._mouse = v end
+    function Frame:SetAlpha(v) self._alpha = v end
+    function Frame:GetPoint() local p = self._point or {} return p[1], p[2], p[3], p[4], p[5] end
+    function Frame:SetFrameRef(k, f) self._refs = self._refs or {} self._refs[k] = f end
+    function Frame:Execute(body) self._executed = (self._executed or 0) + 1 end
+    function Frame:SetStatusBarColor(r, g, b) self._barColor = { r, g, b } end
+    function Frame:SetValue(v) self._value = v end
     function Frame:GetAttribute(k) return self._attrs[k] end
-    function Frame:Show() self._shown = true end
-    function Frame:Hide() self._shown = false end
+    function Frame:Show() guard(self, "Show") self._shown = true end
+    function Frame:Hide() guard(self, "Hide") self._shown = false end
     function Frame:IsShown() return self._shown end
     -- A hand click on a secure button: runs the raidtarget action like Blizzard's secure code.
     function Frame:Click(button, down)
@@ -75,10 +99,16 @@ function M.new(opts)
     function Frame:GetVerticalScroll() return 0 end
     function Frame:GetVerticalScrollRange() return 0 end
 
-    env.CreateFrame = function(kind, name, _, template)
-        if template == "SecureActionButtonTemplate" and ctl.combat then error("protected in combat") end
+    env.CreateFrame = function(kind, name, parent, template)
+        local secure = type(template) == "string" and template:find("Secure") ~= nil
+        if secure and ctl.combat then error("protected in combat") end
         local f = newFrame(kind)
         f._template = template
+        f._parent = parent
+        if secure then
+            local x = f
+            while x and x ~= env.UIParent do x._protected = true; x = x._parent end
+        end
         ctl.lastFrame = f
         if name then env[name] = f end
         return f
@@ -107,8 +137,12 @@ function M.new(opts)
 
     -- Units ----------------------------------------------------------------------
     local function unit(u) return ctl.units[u] end
-    env.UnitExists = function(u) return u == "player" or unit(u) ~= nil end
-    env.UnitName = function(u) local x = unit(u) return x and x.name end
+    env.UnitExists = function(u) return u == "player" or unit(u) ~= nil or (ctl.names and ctl.names[u] ~= nil) end
+    env.UnitName = function(u)
+        if ctl.names and ctl.names[u] then return ctl.names[u] end
+        local x = unit(u)
+        return x and x.name
+    end
     env.UnitGUID = function(u) local x = unit(u) return x and x.guid end
     env.UnitCanAttack = function(_, u) local x = unit(u) return x ~= nil and x.hostile == true end
     env.UnitIsDead = function(u) local x = unit(u) return x ~= nil and (x.hp == 0) end
@@ -130,7 +164,12 @@ function M.new(opts)
         local x, y = unit(a), unit(b)
         return x ~= nil and x == y
     end
-    env.UnitThreatSituation = function(_, u) local x = unit(u) return x and x.threatStatus end
+    env.UnitThreatSituation = function(who, u)
+        local x = unit(u)
+        if not x then return nil end
+        if x.threatBy then return x.threatBy[who] end
+        return x.threatStatus
+    end
     env.UnitDetailedThreatSituation = function(_, u)
         local x = unit(u)
         if not x then return nil end
@@ -171,6 +210,11 @@ function M.new(opts)
             return list
         end,
     }
+    env.RegisterStateDriver = function(frame, state, conditions)
+        if ctl.combat then error("RegisterStateDriver in combat") end
+        ctl.drivers[#ctl.drivers + 1] = { frame = frame, state = state, conditions = conditions }
+    end
+    env.UnregisterStateDriver = function() end
     env.GetNumBindings = function() return 2 end
     env.GetBinding = function(i) return i == 1 and "RAIDTARGET8" or "TARGETNEARESTENEMY" end
 

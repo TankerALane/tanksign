@@ -62,7 +62,18 @@ From `docs/verify-reports/forever-2026-11-06-probe2.txt` (round 2, out of combat
 - The tank's-target button did nothing because the tank had no target (`party3target` empty).
 - `C_Secrets.ShouldUnitThreatValuesBeSecret` takes `(unit, mobUnit)`;
   `C_Secrets.CanCompareUnitTokens(unit, "target")` answered true; identity is not secret.
-- Still unknown: the tank's threat on mobs in combat (no fight with the tank in this round), and
+From `docs/verify-reports/forever-2026-11-06-probe3-dungeon.txt` (5-person dungeon, Austin healing,
+a TANK-role tank in party1, 8 units per sample):
+
+- **Inside an instance, identity is secret too:** mob names, GUIDs and creature types were SECRET
+  (`C_Secrets.ShouldUnitIdentityBeSecret` true). Classification ("elite"), combat flag, dead,
+  `UnitCanAttack` and `GetRaidTargetIndex` (before marking) stayed readable.
+- **The tank's threat is readable on nameplate and target tokens:** `UnitThreatSituation(party1,
+  nameplate3)` = 3, and the other members 0. Detailed threat is readable on `target` only. On
+  `mouseover` and `partyNtarget` tokens everything threat-related was SECRET.
+- `UnitIsUnit(nameplateN, "target")` readable; `UnitIsUnit(partyN.."target", x)` mostly SECRET.
+- Health secret everywhere, as before; the status bar and font string accept it.
+- Earlier note, now answered: the tank's threat on mobs in combat (no fight with the tank in this round), and
   secure clicks in combat (expected to work: secure buttons are built for combat).
 
 <!-- GENERATED:BEGIN (tools/gen_verify_doc.py) -->
@@ -154,6 +165,9 @@ From `docs/verify-reports/forever-2026-11-06-probe2.txt` (round 2, out of combat
 
 | ID | Kind | What it is for | In-game test | Forever |
 |---|---|---|---|---|
+| `RegisterStateDriver` | api | secure [@nameplateN,harm,nodead] visibility for panel rows, also in combat | `/dump type(RegisterStateDriver)` -> "function" | ? |
+| `UnregisterStateDriver` | api | remove a state driver | `/dump type(UnregisterStateDriver)` -> "function" | ? |
+| `m:panel` | manual | panel rows appear for hostile plates, left-click marks, right-click targets, in combat too | fight a pack with the panel shown | ? |
 | `RegisterUnitWatch` | api | secure frames that show and hide with a unit, even in combat | `/dump type(RegisterUnitWatch)` -> "function" | ? |
 
 ### Marking

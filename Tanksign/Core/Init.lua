@@ -1,7 +1,7 @@
 -- Core/Init.lua
--- Loaded last. Sets up the saved variables, detects the client, and registers
--- /tanksign and /ts. Globals created on purpose: TanksignDB (saved variables),
--- SLASH_TANKSIGN1/2 and SlashCmdList.TANKSIGN.
+-- Loaded last. Sets up the saved variables, detects the client, starts the panel and
+-- key bindings, and registers /tanksign and /ts. Globals created on purpose:
+-- TanksignDB (saved variables), SLASH_TANKSIGN1/2 and SlashCmdList.TANKSIGN.
 
 local _, ns = ...
 local L = ns.L
@@ -9,23 +9,112 @@ local L = ns.L
 local Init = {}
 ns.Init = Init
 
-local SCHEMA = 1
-
 local function setupDB()
-    local db = _G.TanksignDB
-    if type(db) ~= "table" then db = {} end
-    db.schema = db.schema or SCHEMA
-    db.settings = db.settings or {}
-    if db.settings.enabled == nil then db.settings.enabled = true end
-    if db.settings.debug == nil then db.settings.debug = false end
-    _G.TanksignDB = db
-    ns.db = db
+    _G.TanksignDB = ns.Settings.Migrate(_G.TanksignDB)
+    ns.db = _G.TanksignDB
 end
 
 local function help()
     ns.Log.Info(L.HELP_HEADER, ns.VERSION)
     for _, line in ipairs(L.HELP_LINES) do ns.Log.Info("  " .. line) end
-    ns.Log.Info(L.STAGE1_NOTE)
+end
+
+local function status()
+    local s = ns.db.settings
+    ns.Log.Info(L.STATUS_LINE, s.enabled and L.ON or L.OFF, ns.State.reason,
+        #ns.Roster.tanks > 0 and table.concat(ns.Roster.tanks, ", ") or L.NONE, ns.Roster.source,
+        L.MARKER_NAMES[s.marker] or tostring(s.marker), tostring(ns.Keys.TankTargetUnit() or L.NONE))
+end
+
+local function setSetting(key, value, message, ...)
+    ns.db.settings[key] = value
+    ns.Roster.Update()
+    ns.State.Refresh()
+    if message then ns.Log.Info(message, ...) end
+end
+
+local function markerFromText(text)
+    local n = tonumber(text)
+    if n and n >= 1 and n <= 8 and n % 1 == 0 then return n end
+    text = (text or ""):lower()
+    for i, name in pairs(L.MARKER_NAMES) do
+        if name:lower() == text then return i end
+    end
+    return nil
+end
+
+local COMMANDS = {}
+
+COMMANDS["on"] = function() ns.State.SetEnabled(true) end
+COMMANDS["off"] = function() ns.State.SetEnabled(false) end
+COMMANDS["toggle"] = function() ns.State.Toggle() end
+COMMANDS["status"] = status
+COMMANDS["show"] = function() setSetting("showPanel", true, L.PANEL_SHOWN) end
+COMMANDS["hide"] = function() setSetting("showPanel", false, L.PANEL_HIDDEN) end
+COMMANDS["lock"] = function() setSetting("locked", true, L.PANEL_LOCKED) end
+COMMANDS["unlock"] = function() setSetting("locked", false, L.PANEL_UNLOCKED) end
+COMMANDS["debug"] = function()
+    setSetting("debug", not ns.db.settings.debug, ns.db.settings.debug and L.DEBUG_OFF or L.DEBUG_ON)
+end
+
+COMMANDS["tank"] = function(rest)
+    if rest == "" then
+        setSetting("tankName", "", L.TANK_CLEARED)
+        return
+    end
+    setSetting("tankName", rest, L.TANK_SET, rest)
+    if ns.db.settings.tankSource == "auto" and ns.Roster.source ~= "name" then
+        ns.Log.Info(L.TANK_SHADOWED, ns.Roster.source)
+    end
+end
+
+COMMANDS["source"] = function(rest)
+    local want = rest:lower()
+    if ns.Settings.IsValid("tankSource", want) then
+        setSetting("tankSource", want, L.SOURCE_SET, want)
+    else
+        ns.Log.Warn(L.SOURCE_USAGE)
+    end
+end
+
+COMMANDS["marker"] = function(rest)
+    local m = markerFromText(rest)
+    if m then
+        setSetting("marker", m, L.MARKER_SET, L.MARKER_NAMES[m])
+    else
+        ns.Log.Warn(L.MARKER_USAGE)
+    end
+end
+
+COMMANDS["rows"] = function(rest)
+    local n = ns.Settings.ParseNumber(rest, 1, 15)
+    if n and n % 1 == 0 then setSetting("maxRows", n, L.ROWS_SET, n) else ns.Log.Warn(L.ROWS_USAGE) end
+end
+
+COMMANDS["scale"] = function(rest)
+    local n = ns.Settings.ParseNumber(rest, 0.5, 2)
+    if n then setSetting("scale", n, L.SCALE_SET, n) else ns.Log.Warn(L.SCALE_USAGE) end
+end
+
+COMMANDS["group"] = function()
+    setSetting("onlyInGroup", not ns.db.settings.onlyInGroup,
+        ns.db.settings.onlyInGroup and L.GROUP_OFF or L.GROUP_ON)
+end
+
+COMMANDS["reset"] = function(rest)
+    if rest == "position" then
+        if ns.Panel.ResetPosition() then ns.Log.Info(L.POSITION_RESET) else ns.Log.Warn(L.NOT_IN_COMBAT) end
+        return
+    end
+    ns.db.settings = ns.Settings.Apply({})
+    ns.Roster.Update()
+    ns.State.Refresh()
+    ns.Log.Info(L.RESET_DONE)
+end
+
+COMMANDS["probe"] = function(rest) ns.Probe.Command(rest) end
+COMMANDS["version"] = function()
+    ns.Log.Info("%s %s by %s (%s)", L.ADDON_TITLE, ns.VERSION, ns.AUTHOR, ns.SUPPORT)
 end
 
 function Init.Slash(msg)
@@ -34,20 +123,16 @@ function Init.Slash(msg)
         ns.Log.Warn(L.UNSUPPORTED, tostring(ns.Compat.interface))
         return
     end
-    if cmd == "probe" then
-        ns.Probe.Command(rest)
-    elseif cmd == "version" then
-        ns.Log.Info("%s %s by %s (%s)", L.ADDON_TITLE, ns.VERSION, ns.AUTHOR, ns.SUPPORT)
-    else
-        help()
-    end
+    local fn = COMMANDS[cmd]
+    if fn then fn(rest) else help() end
 end
 
 local frame = CreateFrame("Frame")
 frame:RegisterEvent("ADDON_LOADED")
 frame:RegisterEvent("PLAYER_LOGIN")
 frame:SetScript("OnEvent", function(self, event, name)
-    if event == "ADDON_LOADED" and name == ns.ADDON_NAME then
+    if event == "ADDON_LOADED" then
+        if name ~= ns.ADDON_NAME then return end
         setupDB()
         local flavor = ns.Compat.Detect()
         ns.inert = not ns.FlavorLogic.IsSupported(flavor)
@@ -55,10 +140,26 @@ frame:SetScript("OnEvent", function(self, event, name)
     elseif event == "PLAYER_LOGIN" then
         if ns.inert then
             ns.Log.Warn(L.UNSUPPORTED, tostring(ns.Compat.interface))
+            self:UnregisterAllEvents()
             return
         end
         ns.Probe.Start()
+        ns.Roster.Update()
+        ns.State.Refresh()
+        local ok, err = pcall(ns.Panel.Init)
+        if not ok then ns.Compat.Disable("panel", ns.Compat.Describe(err)) end
+        ok, err = pcall(ns.Keys.Init)
+        if not ok then ns.Compat.Disable("keys", ns.Compat.Describe(err)) end
+        -- Group and instance changes decide "active" and who the tank is. These two
+        -- events stay registered while disabled, only to keep the state current.
+        self:RegisterEvent("GROUP_ROSTER_UPDATE")
+        self:RegisterEvent("PLAYER_ROLES_ASSIGNED")
+        self:RegisterEvent("PLAYER_ENTERING_WORLD")
+        self:UnregisterEvent("PLAYER_LOGIN")
         ns.Log.Info(L.LOADED, ns.VERSION)
+    else
+        ns.Roster.Update()
+        ns.State.Refresh()
     end
 end)
 

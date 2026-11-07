@@ -57,3 +57,36 @@ Round 2 (same day): health is secret even out of combat; secret health can be sh
 bar; hand-clicked secure buttons mark without being blocked; the marker index is secret once set,
 so the addon cannot see where the skull is (manual-mark protection and "skull already on the best
 mob" cannot be detected). Austin chooses the replacement design next.
+
+## D-007 New design: the mob panel (Austin's choice, 2026-11-06)
+
+Tanksign becomes a click-to-mark panel. One row per hostile, living enemy nameplate, each with
+the mob's name and a live health bar (the bar is fed the secret health value; the addon never
+reads it). Rows the tank holds are highlighted when the tank's threat status is readable.
+Left-click a row places the skull (or the chosen marker); right-click targets the mob. Both are
+secure clicks run by Blizzard's code, so they work in combat.
+
+How it stays legal: every row is a `SecureActionButtonTemplate` button fixed to one token
+(`nameplate1` to `nameplate40`, `type=raidtarget`, `action=set`). A secure state driver per token
+(`[@nameplateN,harm,nodead]`) tells a `SecureHandlerStateTemplate` header which rows to show, and a
+restricted snippet stacks the visible rows, so showing, hiding and re-ordering work in combat
+without addon code touching protected frames. Rows cannot be sorted by health (secret).
+
+From the brief, kept: enable/disable everywhere, only in group or instance, tank source (Role >
+Main Tank > fixed name > auto from threat), marker choice, panel settings, keybinds (toggle, skull
+the tank's target, skull mouseover), debug, profiles, Plain palette. Dropped as impossible:
+automatic choice and marking, switch delay, cooldown, hysteresis, manual-mark protection (marker
+positions are secret), auto-target, "target skull mob" (no macro conditional targets by marker).
+
+Limits that remain: in combat the panel cannot be hidden or moved (protected), so turning
+Tanksign off in combat fades it and stops its updates, and hides it when combat ends. The
+tank's-target key is pointed at the tank out of combat; a roster change in combat applies after it.
+Global names added for key bindings: `TanksignSkullTankTarget`, `TanksignSkullMouseover` and the
+`BINDING_*` strings.
+
+## D-008 Dungeon probe adjustments (2026-11-06)
+
+In instances mob names are secret, so rows hand `UnitName` to the font string unread instead of
+showing "?". The held highlight uses `UnitThreatSituation(tank, nameplateN)`, readable in the
+dungeon probe. A mob that is not in combat is shown neutral (grey), not "loose" (red): red means
+in combat and no tank holds it.

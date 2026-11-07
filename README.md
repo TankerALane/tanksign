@@ -1,33 +1,70 @@
 # Tanksign
 
-**Tanksign puts the skull on the mob your tank should finish first.** It finds the lowest-health
-mob among those the tank is holding (top threat) and marks it with the skull, then moves the skull
-as the fight changes. It is an addon for World of Warcraft, built for **WoW Forever**.
+**A click-to-skull panel for the mobs your tank is holding.** Tanksign lists the enemy mobs around
+you, each with a live health bar, shows which ones the tank holds, and puts the skull on a mob with
+one click. It is an addon for World of Warcraft, built for **WoW Forever**.
 
-> **Status: stage 1 of 6, the probe build.** This version marks nothing on its own. It checks
-> which game functions and values this client gives to addons, so that the real feature is built
-> only on what works. See [docs/ROADMAP.md](docs/ROADMAP.md).
+> **Status: 0.2.0, in development.** The panel works in the test suite and is waiting for in-game
+> testing. See [docs/ROADMAP.md](docs/ROADMAP.md).
 
-## Install
+## Why it is a panel and not automatic
 
-Download the zip from the GitHub releases page (CurseForge will follow) and extract it into
-`World of Warcraft\_forever_\Interface\AddOns\`, so the result is `...\AddOns\Tanksign\`.
+Tanksign was planned to find the lowest-health mob the tank holds and skull it by itself. The
+Forever client does not allow that, and Tanksign does not try to get around it:
 
-## Commands (probe build)
+- Enemy **health is secret** to addons (in and out of combat). An addon can show it in a health bar
+  but cannot read or compare it, so it cannot pick the lowest mob. You spot it on the bars.
+- Addons **cannot place raid markers** or **change your target** themselves. A click or key press
+  you make can: Tanksign's rows and keys are secure buttons that run Blizzard's own marking code.
+
+## Using it
+
+- **Left-click** a row: put the skull (or your chosen marker) on that mob.
+- **Right-click** a row: target that mob.
+- Bar colors: **green**, a tank holds it; **red**, in combat and no tank holds it (loose);
+  **grey**, not pulled yet, or the client keeps the threat secret.
+- The skull button in the panel's title bar turns Tanksign on and off (green on, red off).
+  Drag the title bar to move the panel (out of combat, when unlocked).
+
+Key bindings (Esc > Options > Keybindings > AddOns > Tanksign): **Toggle Tanksign**, **Skull the
+tank's target**, **Skull the mob under the mouse**. Blizzard's own "Set skull on target" key also
+still works.
+
+## Commands
 
 | Command | What it does |
 |---|---|
 | `/ts` or `/tanksign` | list commands |
-| `/ts probe` | check the APIs and show a report you can copy |
-| `/ts probe mark` / `unmark` | try to put the skull on your target, or remove it |
-| `/ts probe target` | try an addon target change (Blizzard's "blocked" popup is expected) |
-| `/ts probe combat on` / `off` | sample unit values automatically in combat |
-| `/ts version` | version and support contact |
+| `/ts on`, `/ts off`, `/ts toggle` | turn Tanksign on or off |
+| `/ts status` | state, tanks, marker |
+| `/ts show`, `/ts hide`, `/ts lock`, `/ts unlock` | panel visibility and dragging |
+| `/ts tank <Name>` | fixed tank name (`/ts tank` alone clears it) |
+| `/ts source auto\|role\|maintank\|name\|threat` | where the tank comes from (auto = in that order) |
+| `/ts marker <1-8 or name>` | the marker a click places (default skull) |
+| `/ts rows <1-15>`, `/ts scale <0.5-2>` | panel size |
+| `/ts group` | only active in a group or instance |
+| `/ts reset`, `/ts reset position` | defaults, or only the panel position |
+| `/ts debug` | explain each row in chat |
+| `/ts probe` | API report for troubleshooting (`/ts probe help`) |
 
 ## Known limits
 
-To be written once the probe has run on Forever: combat lockdown, mobs without a unit token,
-marking permissions, and any values the client keeps secret from addons.
+- **Rows come from nameplates.** A mob without a visible enemy nameplate has no row. Keep enemy
+  nameplates on (Esc > Options > Nameplates) and in range.
+- **Rows are not sorted by health**, because health is secret. They follow nameplate order.
+- **Combat lockdown.** In combat the panel cannot be moved, hidden or rebuilt. Turning Tanksign off
+  in combat fades the panel and stops its updates at once; it hides when the fight ends. Changing
+  the marker or the tank applies after the fight.
+- **Marking permission.** In a group, only the leader and assistants can place markers (Blizzard's
+  rule); clicks from others do nothing.
+- Tanksign cannot see which mob carries the skull (that is secret too), so it cannot warn about a
+  marker someone else moved.
+- There is no "target the skull mob" key: no macro option targets by raid marker.
+
+## Install
+
+Download the zip from the releases page and extract it into
+`World of Warcraft\_forever_\Interface\AddOns\`, so the result is `...\AddOns\Tanksign\`.
 
 ## Credits and support
 

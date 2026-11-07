@@ -14,16 +14,67 @@ L.LOADED = "v%s loaded. Type /ts for commands."
 
 L.HELP_HEADER = "Tanksign %s commands (/tanksign or /ts):"
 L.HELP_LINES = {
-    "/ts probe  - check which APIs this client has and show a report to copy",
-    "/ts probe mark  - try to put a skull on your target (tests marking rights)",
-    "/ts probe unmark  - remove the marker from your target",
-    "/ts probe target  - try an addon target change (expect Blizzard's 'blocked' popup)",
-    "/ts probe buttons  - show/hide secure skull buttons you click yourself (out of combat)",
-    "/ts probe combat on|off  - sample unit values automatically in combat (on by default)",
-    "/ts probe clear  - forget saved probe samples",
-    "/ts version  - show the version",
+    "/ts on | off | toggle  - turn Tanksign on or off",
+    "/ts status  - state, tanks, marker",
+    "/ts show | hide  - show or hide the mob panel",
+    "/ts lock | unlock  - stop or allow dragging the panel",
+    "/ts tank <Name>  - fixed tank name (/ts tank alone clears it)",
+    "/ts source auto|role|maintank|name|threat  - where the tank comes from",
+    "/ts marker <1-8 or name>  - marker that a click places (default skull)",
+    "/ts rows <1-15>  - most rows shown   /ts scale <0.5-2>",
+    "/ts group  - only active in a group or instance (toggle)",
+    "/ts reset [position]  - default settings, or only the panel position",
+    "/ts debug  - explain each row decision in chat",
+    "/ts probe  - API report (see /ts probe help)",
 }
-L.STAGE1_NOTE = "This is the stage 1 probe build: it does not mark anything on its own yet."
+L.ON = "ON"
+L.OFF = "OFF"
+L.NONE = "none"
+L.ENABLED = "ENABLED"
+L.DISABLED = "DISABLED"
+L.STATUS_LINE = "%s (%s). Tanks: %s (source %s). Marker: %s. Tank's-target key marks: %s."
+L.PANEL_SHOWN = "Panel shown."
+L.PANEL_HIDDEN = "Panel hidden. /ts show brings it back."
+L.PANEL_LOCKED = "Panel locked."
+L.PANEL_UNLOCKED = "Panel unlocked: drag the title bar to move it."
+L.PANEL_EMPTY = "No enemy nameplates"
+L.PANEL_AFTER_COMBAT = "The panel will appear when this fight ends (secure frames cannot be built in combat)."
+L.DEBUG_ON = "Debug ON: row decisions are explained in chat."
+L.DEBUG_OFF = "Debug OFF."
+L.TANK_SET = "Fixed tank name: %s."
+L.TANK_CLEARED = "Fixed tank name cleared."
+L.TANK_SHADOWED = "Note: tank source is auto, and '%s' comes before a fixed name. Use /ts source name to use the name."
+L.SOURCE_SET = "Tank source: %s."
+L.SOURCE_USAGE = "Usage: /ts source auto|role|maintank|name|threat"
+L.MARKER_SET = "Clicks now place: %s."
+L.MARKER_USAGE = "Usage: /ts marker <1-8> or a name (skull, cross, square, moon, triangle, diamond, circle, star)"
+L.ROWS_SET = "Up to %d rows."
+L.ROWS_USAGE = "Usage: /ts rows <1-15>"
+L.SCALE_SET = "Panel scale %.2f."
+L.SCALE_USAGE = "Usage: /ts scale <0.5-2>"
+L.GROUP_ON = "Only active in a group or instance."
+L.GROUP_OFF = "Active everywhere, also solo."
+L.POSITION_RESET = "Panel position reset."
+L.NOT_IN_COMBAT = "Not possible in combat; try again after the fight."
+L.RESET_DONE = "Settings reset to defaults."
+L.MARKER_NAMES = { [1] = "Star", [2] = "Circle", [3] = "Diamond", [4] = "Triangle", [5] = "Moon", [6] = "Square",
+    [7] = "Cross", [8] = "Skull" }
+L.ROW_TIP_LEFT = "Left-click: put the marker on this mob"
+L.ROW_TIP_RIGHT = "Right-click: target this mob"
+L.TOGGLE_TIP_ON = "Tanksign is ON. Click to turn it off."
+L.TOGGLE_TIP_OFF = "Tanksign is OFF. Click to turn it on."
+L.TOGGLE_TIP_DRAG = "Drag the title bar to move the panel (when unlocked, out of combat)."
+L.BIND_TOGGLE = "Toggle Tanksign"
+L.BIND_TANK_TARGET = "Skull the tank's target"
+L.BIND_MOUSEOVER = "Skull the mob under the mouse"
+L.PROBE_HELP = {
+    "/ts probe  - check which APIs this client has and show a report to copy",
+    "/ts probe mark | unmark  - addon SetRaidTarget test (blocked on Forever)",
+    "/ts probe target  - addon target change test (blocked on Forever)",
+    "/ts probe buttons  - secure skull buttons you click (out of combat)",
+    "/ts probe combat on|off  - sample unit values in combat",
+    "/ts probe clear  - forget saved probe samples",
+}
 
 L.PROBE_TITLE = "Tanksign probe report (Ctrl+A, Ctrl+C to copy)"
 L.PROBE_SAVED = "Probe report saved. It is also in SavedVariables\\Tanksign.lua after /reload."
@@ -44,7 +95,7 @@ L.PROBE_BUTTONS_TITLE = "Tanksign probe: click to mark"
 L.PROBE_BTN_RAIDTARGET = "Skull target (secure)"
 L.PROBE_BTN_MACRO = "Skull target (/tm 8 macro)"
 L.PROBE_BTN_TANK = "Skull tank's target (secure)"
-L.PROBE_UNKNOWN = "Unknown probe command. Try /ts probe, /ts probe mark, /ts probe target."
+L.PROBE_UNKNOWN = "Unknown probe command. /ts probe help lists them."
 
 L.COPY_HINT = "Ctrl+A then Ctrl+C copies everything. Esc closes."
 L.CLOSE = "Close"

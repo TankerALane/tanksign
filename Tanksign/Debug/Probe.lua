@@ -59,7 +59,7 @@ local function state()
     local db = ns.db
     db.probe = db.probe or {}
     local p = db.probe
-    if p.combatSampling == nil then p.combatSampling = true end
+    if p.combatSampling == nil then p.combatSampling = false end
     p.combat = p.combat or {}
     p.marks = p.marks or {}
     p.targets = p.targets or {}
@@ -661,6 +661,8 @@ function Probe.Command(rest)
         end
     elseif sub == "clear" then
         Probe.Clear()
+    elseif sub == "help" then
+        for _, line in ipairs(L.PROBE_HELP) do ns.Log.Info("  " .. line) end
     else
         ns.Log.Warn(L.PROBE_UNKNOWN)
     end

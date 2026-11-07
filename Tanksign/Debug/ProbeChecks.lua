@@ -78,6 +78,9 @@ ns.ProbeChecks = {
     { id = "C_Secrets.ShouldUnitHealthMaxBeSecret", kind = "api", area = "Secrets", why = "Blizzard's own answer: is this unit's health secret" },
     { id = "C_Secrets.ShouldUnitThreatValuesBeSecret", kind = "api", area = "Secrets", why = "Blizzard's own answer: are threat values on this unit secret" },
     { id = "C_Secrets.ShouldUnitThreatStateBeSecret", kind = "api", area = "Secrets", why = "Blizzard's own answer: is threat status on this unit secret" },
+    { id = "RegisterStateDriver", kind = "api", area = "Targeting", why = "secure [@nameplateN,harm,nodead] visibility for panel rows, also in combat" },
+    { id = "UnregisterStateDriver", kind = "api", area = "Targeting", why = "remove a state driver" },
+    { id = "m:panel", kind = "manual", area = "Targeting", why = "panel rows appear for hostile plates, left-click marks, right-click targets, in combat too", test = "fight a pack with the panel shown" },
     { id = "RegisterUnitWatch", kind = "api", area = "Targeting", why = "secure frames that show and hide with a unit, even in combat" },
     { id = "x:mark.test", kind = "custom", area = "Marking", why = "results of /ts probe mark (solo, party leader, party member, in combat)", test = "/ts probe mark" },
 

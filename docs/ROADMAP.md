@@ -4,11 +4,11 @@ Each stage ends with a commit, a test run, and an in-game checklist for Austin.
 
 | Stage | Content | State |
 |---|---|---|
-| 1 | Repo skeleton, TOC, probe, MIT license, README stub, sync script | done; probe 1 read; probe round 2 waiting |
-| 2 | Core: tank detection, candidate mobs, lowest-health choice, skull marking, enable/disable | on hold: health is secret and SetRaidTarget is forbidden (D-006) |
-| 3 | Switch delay, cooldown, hysteresis, manual-mark protection | |
-| 4 | Targeting: auto where allowed, keybind and secure buttons otherwise | |
-| 5 | Options panel, remaining settings, best-mob frame, alerts, profiles | |
+| 1 | Repo skeleton, TOC, probe, MIT license, README stub, sync script | done; three Forever probe reports read |
+| 2 | Mob panel core (D-007): secure rows per enemy nameplate, health bars, click to skull, right-click to target, tank detection and highlight, enable/disable (slash, button, keybind), keybinds for tank's target and mouseover | built, waiting for in-game test |
+| 3 | Row details: elite and caster tags, dim critters/pets/totems, threat-percent option, target and marker indicators where readable | |
+| 4 | (folded into 2: secure targeting by right-click; no auto-target on Forever) | |
+| 5 | Options panel and the remaining settings, alerts, profiles | |
 | 6 | Icon and logo, README with screenshots, CHANGELOG, release packaging | |
 
 ## Open questions the probe answers

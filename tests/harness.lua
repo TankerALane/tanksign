@@ -81,6 +81,9 @@ H.PURE_FILES = {
     "Locale/enUS.lua",
     "Compat/FlavorLogic.lua",
     "UI/Palette.lua",
+    "Core/Settings.lua",
+    "Core/TankLogic.lua",
+    "Core/ActiveLogic.lua",
     "Debug/ProbeChecks.lua",
     "Debug/ProbeReport.lua",
 }

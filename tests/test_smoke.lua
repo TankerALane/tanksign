@@ -20,10 +20,13 @@ end
 
 H.test("loads on Forever, creates only the allowed globals", function()
     local env, ctl = boot()
-    H.ok(ctl.chatText():find("v0.1.0 loaded", 1, true), ctl.chatText())
+    H.ok(ctl.chatText():find("v0.2.0 loaded", 1, true), ctl.chatText())
     H.eq(type(env.TanksignDB), "table")
     H.eq(env.TanksignDB.settings.enabled, true)
-    H.eq(table.concat(ctl.newGlobals(), ","), "SLASH_TANKSIGN1,SLASH_TANKSIGN2,TanksignDB")
+    H.eq(table.concat(ctl.newGlobals(), ","), table.concat({ "BINDING_HEADER_TANKSIGN",
+        "BINDING_NAME_CLICK TanksignSkullMouseover:LeftButton", "BINDING_NAME_CLICK TanksignSkullTankTarget:LeftButton",
+        "BINDING_NAME_TANKSIGN_TOGGLE", "SLASH_TANKSIGN1", "SLASH_TANKSIGN2", "TanksignDB", "TanksignSkullMouseover",
+        "TanksignSkullTankTarget" }, ","))
     H.eq(env.SLASH_TANKSIGN2, "/ts")
     H.eq(type(env.SlashCmdList.TANKSIGN), "function")
 end)
@@ -31,7 +34,9 @@ end)
 H.test("help and version commands", function()
     local _, ctl = boot()
     ctl.slash("")
-    H.ok(ctl.chatText():find("/ts probe mark", 1, true))
+    H.ok(ctl.chatText():find("/ts on | off | toggle", 1, true))
+    ctl.slash("probe help")
+    H.ok(ctl.chatText():find("/ts probe buttons", 1, true))
     ctl.slash("version")
     H.ok(ctl.chatText():find("Decoupled Lane Studio", 1, true))
 end)
@@ -71,6 +76,10 @@ H.test("combat sampling saves three samples per fight", function()
     ctl.combat = true
     ctl.fire("PLAYER_REGEN_DISABLED")
     ctl.advance(10)
+    H.eq(#env.TanksignDB.probe.combat, 0, "off by default")
+    ctl.slash("probe combat on")
+    ctl.fire("PLAYER_REGEN_DISABLED")
+    ctl.advance(10)
     H.eq(#env.TanksignDB.probe.combat, 3)
     H.ok(ctl.chatText():find("health secret on 1/1", 1, true), ctl.chatText())
     ctl.slash("probe combat off")
@@ -82,6 +91,7 @@ end)
 H.test("combat samples stop when combat ends early", function()
     local env, ctl = boot()
     hostile(ctl, "nameplate1")
+    ctl.slash("probe combat on")
     ctl.combat = true
     ctl.fire("PLAYER_REGEN_DISABLED")
     ctl.advance(2)
@@ -166,7 +176,7 @@ H.test("secure skull buttons: built out of combat, clicks recorded, tank's targe
     ctl.slash("probe buttons")
     local buttons = {}
     for _, f in ipairs(ctl.frames) do
-        if f._template == "SecureActionButtonTemplate" and f._attrs.type then buttons[#buttons + 1] = f end
+        if f._template == "SecureActionButtonTemplate" and f._attrs.type and f._parent ~= env.UIParent then buttons[#buttons + 1] = f end
     end
     H.eq(#buttons, 3)
     H.eq(buttons[3]._attrs.unit, "party2target")

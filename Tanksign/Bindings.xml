@@ -1,0 +1,7 @@
+<Bindings>
+    <Binding name="TANKSIGN_TOGGLE" header="TANKSIGN" category="ADDONS">
+        SlashCmdList.TANKSIGN("toggle")
+    </Binding>
+    <Binding name="CLICK TanksignSkullTankTarget:LeftButton" category="ADDONS"/>
+    <Binding name="CLICK TanksignSkullMouseover:LeftButton" category="ADDONS"/>
+</Bindings>

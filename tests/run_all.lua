@@ -15,7 +15,9 @@ local FILES = {
     "test_toc",
     "test_probe_checks",
     "test_probe_report",
+    "test_logic",
     "test_smoke",
+    "test_panel",
 }
 
 for _, name in ipairs(FILES) do

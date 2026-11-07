@@ -113,3 +113,15 @@ function Compat.Detect()
     if tocVersion and tocVersion ~= "" then ns.VERSION = tocVersion end
     return Compat.flavor
 end
+
+-- The value itself if it is readable, or `unknown` (default nil) if it is secret.
+-- Use this on every unit fact before comparing it.
+function Compat.Plain(value, unknown)
+    if Compat.IsSecret(value) then return unknown end
+    return value
+end
+
+function Compat.InCombat()
+    local fn = _G.InCombatLockdown
+    return type(fn) == "function" and fn() == true
+end
