@@ -154,3 +154,4 @@ nameplates, that part turns itself off once with a message. Limits: markers plac
 players, and by the tank's-target key, are not shown.
 Confirmed in game by Austin (2026-11-07): right-click cross, and skull/X icons on rows and
 nameplates, including moving the skull onto the X-marked mob (after the time-only grace fix).
+Options page confirmed working in game by Austin (2026-11-07).

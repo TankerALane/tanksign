@@ -92,7 +92,8 @@ Download the zip from the releases page and extract it into
 
 ## Credits and support
 
-Made by **Decoupled Lane Studio**. Support: support@decoupledlane.com.
+Made by **Decoupled Lane Studio**. Support: support@decoupledlane.com. Bugs and ideas:
+[GitHub issues](https://github.com/TankerALane/tanksign/issues).
 
 Released under the [MIT License](LICENSE). World of Warcraft is a trademark of Blizzard
 Entertainment; this project is not affiliated with Blizzard.

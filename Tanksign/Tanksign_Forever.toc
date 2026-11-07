@@ -7,6 +7,7 @@
 ## SavedVariables: TanksignDB
 ## X-Flavor: Forever
 ## X-License: MIT
+## X-Website: https://github.com/TankerALane/tanksign
 ## X-Email: support@decoupledlane.com
 ## X-Copyright: Copyright (c) 2026 Decoupled Lane Studio
 

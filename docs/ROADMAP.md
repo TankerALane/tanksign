@@ -8,8 +8,8 @@ Each stage ends with a commit, a test run, and an in-game checklist for Austin.
 | 2 | Mob panel core (D-007): secure rows per enemy nameplate, health bars, click to skull, right-click to target, tank detection and highlight, enable/disable (slash, button, keybind), keybinds for tank's target and mouseover | done: rows and left-click confirmed in game; right-click targeting impossible (D-010) |
 | 3 | Row details: elite/rare/boss/caster tags, dim critters/totems/pets, target border | done (tags, target border and toggles confirmed; dimming not yet seen) |
 | 4 | (dropped: Forever allows no addon targeting, not even secure clicks on nameplate tokens) | |
-| 5 | Options panel and the remaining settings, alerts, profiles; right-click cross and marker icons (0.5.0) | marking, icons confirmed in game; options page not yet reported |
-| 6 | Icon and logo, README with screenshots, CHANGELOG, release packaging | |
+| 5 | Options panel and the remaining settings, alerts, profiles; right-click cross and marker icons (0.5.0) | done: confirmed in game |
+| 6 | Icon and logo, README with screenshots, CHANGELOG, release packaging | in progress: public repo created, CurseForge text ready |
 
 ## Open questions the probe answers
 
