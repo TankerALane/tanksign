@@ -62,7 +62,8 @@ still works.
 | Command | What it does |
 |---|---|
 | `/ts` or `/tanksign` | list the everyday commands (`/ts help more` lists all of them) |
-| `/ts on`, `/ts off`, `/ts toggle` | turn Tanksign on or off |
+| `/ts on`, `/ts off`, `/ts toggle` | turn Tanksign on or off (the small window stays, with its ON/OFF button) |
+| `/ts disable`, `/ts enable` | turn Tanksign off and hide its whole window, or bring both back |
 | `/ts status` | state, tanks, marker |
 | `/ts show`, `/ts hide`, `/ts lock`, `/ts unlock` | panel visibility and dragging |
 | `/ts tank <Name>` | fixed tank name (`/ts tank` alone clears it) |

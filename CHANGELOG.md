@@ -4,6 +4,9 @@ All notable changes to Tanksign. Versions follow semantic versioning; 0.x releas
 
 ## 0.9.2 (beta): tidier commands and saved data
 
+- `/ts disable` turns Tanksign off and hides its whole window; `/ts enable` brings both back.
+  (`/ts off` still leaves the small window with its ON/OFF button.) In combat the window fades
+  at once and hides when the fight ends.
 - `/ts` lists only the everyday commands; `/ts help more` lists the rest, with the tools for bug
   reports (debug, diag, probe) at the end.
 - New profiles start from the default settings. Before, they copied the profile you were on, so

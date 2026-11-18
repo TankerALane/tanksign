@@ -77,6 +77,7 @@ Known limits:
 
 - **/ts**: list commands
 - **/ts on**, **/ts off**: turn Tanksign on or off
+- **/ts disable**, **/ts enable**: turn it off and hide the whole window, or bring both back
 - **/ts options**: open the options page
 - **/ts tank Name**: set a fixed tank
 - **/ts profile Name**: switch to (or create) a profile

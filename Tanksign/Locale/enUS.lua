@@ -16,7 +16,8 @@ L.WELCOME = "Welcome! The panel lists enemy mobs with a nameplate: left-click a 
 L.HELP_HEADER = "Tanksign %s commands (/tanksign or /ts):"
 L.HELP_LINES = {
     "/ts options  - open the options page (everything is there)",
-    "/ts on | off  - turn Tanksign on or off",
+    "/ts on | off  - turn Tanksign on or off (the small window stays, with its ON/OFF button)",
+    "/ts disable | enable  - turn Tanksign off and hide its window, or bring both back",
     "/ts show | hide  - show or hide the mob panel",
     "/ts lock | unlock  - stop or allow dragging the panel",
     "/ts tank <Name>  - fixed tank name (/ts tank alone clears it)",
@@ -46,6 +47,9 @@ L.ON = "ON"
 L.OFF = "OFF"
 L.NONE = "none"
 L.ENABLED = "ENABLED"
+L.DISABLE_ALL = "Tanksign is off and its window is hidden. /ts enable brings it back."
+L.ENABLE_ALL = "Tanksign is on and its window is shown."
+L.HIDES_AFTER_FIGHT = "The window fades now and hides when this fight ends."
 L.DISABLED = "DISABLED"
 L.STATUS_LINE = "%s (%s). Tanks: %s (source %s). Marker: %s. Tank's-target key marks: %s."
 L.PANEL_SHOWN = "Panel shown."

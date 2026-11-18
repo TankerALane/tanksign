@@ -92,6 +92,29 @@ H.test("toggle out of combat: inert when off, back on when on", function()
     H.eq(env.TanksignSkullMouseover._attrs.unit, "mouseover")
 end)
 
+H.test("/ts disable hides the whole window and turns off; /ts enable brings both back", function()
+    local env, ctl = boot()
+    local container = ctl.ns.Panel.rows[1]._parent._parent
+    H.eq(container._shown, true)
+    ctl.slash("disable")
+    H.eq(container._shown, false, "window gone")
+    H.eq(env.TanksignDB.profiles.Default.enabled, false)
+    H.eq(env.TanksignSkullMouseover._attrs.unit, nil, "keys do nothing")
+    ctl.slash("enable")
+    H.eq(container._shown, true, "window back")
+    H.eq(env.TanksignDB.profiles.Default.enabled, true)
+    H.eq(env.TanksignSkullMouseover._attrs.unit, "mouseover")
+    -- in combat: nothing protected is called; it hides when the fight ends
+    ctl.combat = true
+    ctl.fire("PLAYER_REGEN_DISABLED")
+    ctl.slash("disable")
+    H.eq(#ctl.blockedCalls, 0)
+    H.ok(ctl.chatText():find("hides when this fight ends", 1, true))
+    ctl.combat = false
+    ctl.fire("PLAYER_REGEN_ENABLED")
+    H.eq(container._shown, false)
+end)
+
 H.test("toggle in combat: no protected call, fades now, applies after combat", function()
     local env, ctl = boot()
     local header = ctl.ns.Panel.rows[1]._parent

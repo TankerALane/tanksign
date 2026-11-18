@@ -81,6 +81,19 @@ COMMANDS["help"] = help
 COMMANDS["on"] = function() ns.State.SetEnabled(true) end
 COMMANDS["off"] = function() ns.State.SetEnabled(false) end
 COMMANDS["toggle"] = function() ns.State.Toggle() end
+-- disable / enable: off AND the whole window hidden, then both back. The window is a secure
+-- frame, so in combat it fades now and hides when the fight ends (Panel waits for it).
+COMMANDS["disable"] = function()
+    ns.db.settings.showPanel = false
+    ns.State.SetEnabled(false)
+    ns.Log.Info(L.DISABLE_ALL)
+    if ns.Compat.InCombat() then ns.Log.Info(L.HIDES_AFTER_FIGHT) end
+end
+COMMANDS["enable"] = function()
+    ns.db.settings.showPanel = true
+    ns.State.SetEnabled(true)
+    ns.Log.Info(L.ENABLE_ALL)
+end
 COMMANDS["status"] = status
 COMMANDS["show"] = function() setSetting("showPanel", true, L.PANEL_SHOWN) end
 COMMANDS["hide"] = function() setSetting("showPanel", false, L.PANEL_HIDDEN) end
