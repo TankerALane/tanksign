@@ -36,7 +36,7 @@ H.test("palette is Fellowship Ledger's Plain skin, value for value", function()
         text = { 0.95, 0.95, 0.95, 1 }, muted = { 0.7, 0.7, 0.72, 1 }, heading = { 1, 0.82, 0, 1 },
         accent = { 1, 0.82, 0, 1 }, buttonBg = { 0.25, 0.25, 0.28, 0.9 }, buttonBorder = { 0.5, 0.5, 0.55, 1 },
         buttonText = { 1, 0.82, 0, 1 }, rule = { 0.45, 0.45, 0.5, 1 }, rowAlt = { 1, 1, 1, 0.04 },
-        good = { 0.4, 0.85, 0.5, 1 }, bad = { 1, 0.45, 0.4, 1 },
+        good = { 0.4, 0.85, 0.5, 1 }, bad = { 1, 0.45, 0.4, 1 }, section = { 1, 0.82, 0, 1 },
     }
     for role, c in pairs(want) do
         for i = 1, 4 do H.eq(P.Color(role)[i], c[i], role .. "[" .. i .. "]") end

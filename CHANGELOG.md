@@ -2,6 +2,18 @@
 
 All notable changes to Tanksign. Versions follow semantic versioning; 0.x releases are pre-releases.
 
+## 0.9.2 (beta): tidier commands and saved data
+
+- `/ts` lists only the everyday commands; `/ts help more` lists the rest, with the tools for bug
+  reports (debug, diag, probe) at the end.
+- New profiles start from the default settings. Before, they copied the profile you were on, so
+  options like the chat line after each mark carried over by surprise. `/ts profile copy <name>`
+  copies on purpose.
+- Smaller saved data: the session record written at logout keeps the last 40 log lines (it kept
+  400 and a panel diagnosis). With `/ts debug` on it keeps everything, as before.
+- The mark recorder's chat message is reworded.
+- Palette: the `section` color added to Fellowship Ledger's Plain skin in its 1.13.0 is copied too.
+
 ## 0.9.1 (beta): markers changed by other players
 
 - Markers changed by other players: when another player puts a marker on your skull or X mob, or

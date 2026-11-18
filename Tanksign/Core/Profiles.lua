@@ -45,12 +45,13 @@ local function cleanName(name)
     return name
 end
 
--- New profile, copied from `from` (default: the active one). Returns name or nil, error key.
+-- New profile with default settings, or a copy of profile `from` when given.
+-- Returns name or nil, error key.
 function Profiles.Create(db, name, from)
     name = cleanName(name)
     if not name then return nil, "PROFILE_BAD_NAME" end
     if db.profiles[name] then return nil, "PROFILE_EXISTS" end
-    local source = db.profiles[from or db.profile] or {}
+    local source = from and db.profiles[from] or {}
     local copy = {}
     for k, v in pairs(source) do copy[k] = v end
     db.profiles[name] = ns.Settings.Apply(copy)

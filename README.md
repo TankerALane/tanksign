@@ -61,7 +61,7 @@ still works.
 
 | Command | What it does |
 |---|---|
-| `/ts` or `/tanksign` | list commands |
+| `/ts` or `/tanksign` | list the everyday commands (`/ts help more` lists all of them) |
 | `/ts on`, `/ts off`, `/ts toggle` | turn Tanksign on or off |
 | `/ts status` | state, tanks, marker |
 | `/ts show`, `/ts hide`, `/ts lock`, `/ts unlock` | panel visibility and dragging |
@@ -75,8 +75,10 @@ still works.
 | `/ts tags`, `/ts dim` | row tags, and dimming of critters, totems and pets (toggles) |
 | `/ts reset`, `/ts reset position` | defaults, or only the panel position |
 | `/ts options` | open the options page |
-| `/ts profile [name \| list]` | switch to a profile, or create it as a copy of the current one |
-| `/ts debug` | explain each row in chat |
+| `/ts profile [name \| list]` | switch to a profile, or create it with default settings |
+| `/ts profile copy <name>` | create a profile with the current profile's settings |
+| `/ts version` | version and support address |
+| `/ts debug` | explain each row in chat, and keep a longer log for bug reports |
 | `/ts diag` | what the client did with the panel rows (for bug reports) |
 | `/ts probe` | API report for troubleshooting (`/ts probe help`) |
 

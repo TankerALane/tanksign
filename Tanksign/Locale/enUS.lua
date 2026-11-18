@@ -14,11 +14,18 @@ L.LOADED = "v%s loaded. Type /ts for commands."
 
 L.HELP_HEADER = "Tanksign %s commands (/tanksign or /ts):"
 L.HELP_LINES = {
-    "/ts on | off | toggle  - turn Tanksign on or off",
-    "/ts status  - state, tanks, marker",
+    "/ts options  - open the options page (everything is there)",
+    "/ts on | off  - turn Tanksign on or off",
     "/ts show | hide  - show or hide the mob panel",
     "/ts lock | unlock  - stop or allow dragging the panel",
     "/ts tank <Name>  - fixed tank name (/ts tank alone clears it)",
+    "/ts profile [name | list]  - switch to (or create) a profile",
+    "/ts reset [position]  - default settings, or only the panel position",
+    "/ts help more  - all commands, and tools for bug reports",
+}
+L.HELP_MORE_HEADER = "More Tanksign commands:"
+L.HELP_MORE_LINES = {
+    "/ts toggle  - turn Tanksign on or off   /ts status  - state, tanks, marker",
     "/ts source auto|role|maintank|name|threat  - where the tank comes from",
     "/ts marker <1-8 or name>  - marker a left-click places (default skull)",
     "/ts rightmarker <1-8 or name>  - marker a right-click places (default cross)",
@@ -27,11 +34,11 @@ L.HELP_LINES = {
     "/ts group  - only active in a group or instance (toggle)",
     "/ts tags  - E elite, R rare, B boss, C caster tags on rows (toggle)",
     "/ts dim  - dim critters, totems and pets (toggle)",
-    "/ts reset [position]  - default settings, or only the panel position",
-    "/ts options  - open the options page",
-    "/ts profile [name | list]  - switch to (or create) a profile",
-    "/ts debug  - explain each row decision in chat",
-    "/ts diag  - show what the client did with the panel rows (for bug reports)",
+    "/ts profile copy <name>  - new profile with this profile's settings",
+    "/ts version  - version and support address",
+    "For bug reports:",
+    "/ts debug  - explain each row decision in chat, and keep a longer log",
+    "/ts diag  - show what the client did with the panel rows",
     "/ts probe  - API report (see /ts probe help)",
 }
 L.ON = "ON"
@@ -121,7 +128,7 @@ L.OPT_KEYS_NOTE = "Set them in Esc > Options > Keybindings > AddOns > Tanksign. 
 L.OPT_NOT_BOUND = "not bound"
 L.OPT_PROFILES = "Profiles"
 L.OPT_PROFILE = "Active profile (click to switch)"
-L.OPT_NEW_PROFILE = "New profile, copy of this one (Enter)"
+L.OPT_NEW_PROFILE = "New profile, default settings (Enter)"
 L.OPT_DELETE_PROFILE = "Delete this profile"
 L.OPT_AUTO_PROFILE = "Switch to 'Dungeon' / 'Raid' profiles automatically"
 L.OPT_OTHER = "Other"
@@ -176,7 +183,7 @@ L.PROBE_BTN_T_TYPE = "Target nameplate1 (type=target)"
 L.PROBE_BTN_T_SLASH = "Target nameplate1 (/target nameplate1)"
 L.PROBE_BTN_T_COND = "Target nameplate1 (/target [@nameplate1])"
 L.PROBE_BTN_T_ASSIST = "Target the tank's target (/assist party1)"
-L.MARKWATCH_ON = "Mark recorder ON for %d seconds. Change markers now (see the steps Claude gave you); /ts probe marks again stops it."
+L.MARKWATCH_ON = "Mark recorder ON for %d seconds: change markers now. /ts probe marks again stops it."
 L.MARKWATCH_OFF = "Mark recorder OFF: %d marker events, %d times a mob read marked, then unmarked, then marked. /ts probe shows the timeline."
 L.PROBE_UNKNOWN = "Unknown probe command. /ts probe help lists them."
 

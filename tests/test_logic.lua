@@ -136,7 +136,7 @@ H.test("row dimming: critters, wild and non-combat pets, totems, player pets", f
     H.eq((R.Dim({})), false, "secret creature type: no dimming")
 end)
 
-H.test("profiles: create copies, switch, cycle, delete rules, auto choice, reset", function()
+H.test("profiles: create (defaults or a copy), switch, cycle, delete rules, auto choice, reset", function()
     local ns = H.pureNamespace()
     local P = ns.Profiles
     local db = {}
@@ -144,7 +144,10 @@ H.test("profiles: create copies, switch, cycle, delete rules, auto choice, reset
     H.eq(db.profile, "Default")
     s.marker = 7
     H.eq(P.Create(db, "  Dungeon ", nil), "Dungeon")
-    H.eq(db.profiles.Dungeon.marker, 7, "copied from the active profile")
+    H.eq(db.profiles.Dungeon.marker, 8, "a new profile starts from the defaults")
+    H.eq(P.Create(db, "Copy", "Default"), "Copy")
+    H.eq(db.profiles.Copy.marker, 7, "copied when asked")
+    db.profiles.Copy = nil
     H.eq(select(2, P.Create(db, "Dungeon")), "PROFILE_EXISTS")
     H.eq(select(2, P.Create(db, "")), "PROFILE_BAD_NAME")
     H.eq(select(2, P.Create(db, string.rep("x", 30))), "PROFILE_BAD_NAME")

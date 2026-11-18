@@ -9,7 +9,7 @@ local Palette = {}
 ns.Palette = Palette
 
 Palette.ROLES = { "bg", "panel", "border", "text", "muted", "heading", "accent", "buttonBg", "buttonBorder",
-    "buttonText", "rule", "rowAlt", "good", "bad" }
+    "buttonText", "rule", "rowAlt", "good", "bad", "section" }
 
 Palette.PLAIN = {
     bg = { 0.05, 0.05, 0.06, 0.92 }, panel = { 0.1, 0.1, 0.12, 0.9 }, border = { 0.45, 0.45, 0.5, 1 },
@@ -17,6 +17,7 @@ Palette.PLAIN = {
     accent = { 1, 0.82, 0, 1 }, buttonBg = { 0.25, 0.25, 0.28, 0.9 }, buttonBorder = { 0.5, 0.5, 0.55, 1 },
     buttonText = { 1, 0.82, 0, 1 }, rule = { 0.45, 0.45, 0.5, 1 }, rowAlt = { 1, 1, 1, 0.04 },
     good = { 0.4, 0.85, 0.5, 1 }, bad = { 1, 0.45, 0.4, 1 },
+    section = { 1, 0.82, 0, 1 }, -- added in Fellowship Ledger 1.13.0 (small section titles)
 }
 
 function Palette.Color(role)

@@ -80,6 +80,7 @@ Known limits:
 - **/ts options**: open the options page
 - **/ts tank Name**: set a fixed tank
 - **/ts profile Name**: switch to (or create) a profile
+- **/ts help more**: all commands
 
 Found a bug or have an idea? Open an issue on GitHub: https://github.com/TankerALane/tanksign/issues
 Support: support@decoupledlane.com

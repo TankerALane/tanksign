@@ -40,7 +40,12 @@ local function autoProfile()
     if want and want ~= saved.profile then Init.UseProfile(want, false) end
 end
 
-local function help()
+local function help(rest)
+    if rest == "more" then
+        ns.Log.Info(L.HELP_MORE_HEADER)
+        for _, line in ipairs(L.HELP_MORE_LINES) do ns.Log.Info("  " .. line) end
+        return
+    end
     ns.Log.Info(L.HELP_HEADER, ns.VERSION)
     for _, line in ipairs(L.HELP_LINES) do ns.Log.Info("  " .. line) end
 end
@@ -71,6 +76,7 @@ end
 
 local COMMANDS = {}
 
+COMMANDS["help"] = help
 COMMANDS["on"] = function() ns.State.SetEnabled(true) end
 COMMANDS["off"] = function() ns.State.SetEnabled(false) end
 COMMANDS["toggle"] = function() ns.State.Toggle() end
@@ -181,7 +187,10 @@ COMMANDS["profile"] = function(rest)
         Init.UseProfile(rest, true)
         return
     end
-    local name, err = ns.Profiles.Create(db, rest)
+    local from
+    local copyName = rest:match("^copy%s+(.+)$")
+    if copyName then rest, from = copyName, db.profile end
+    local name, err = ns.Profiles.Create(db, rest, from)
     if name then
         Init.UseProfile(name, true)
     else
@@ -247,12 +256,18 @@ frame:SetScript("OnEvent", function(self, event, name)
     end
 end)
 
--- Written on /reload or logout, so a test session can be read from SavedVariables:
--- the last debug lines (kept even with debug printing off), actions Blizzard blocked
--- for Tanksign, and features turned off because an API failed.
+-- Written on /reload or logout, so a session can be read from SavedVariables for a bug
+-- report: actions Blizzard blocked for Tanksign, features turned off because an API
+-- failed, and the last debug lines. Kept small (a few KB) unless debug is on, which keeps
+-- the full log and the panel diagnosis.
+local SESSION_LINES = 40
+
 function Init.SaveSession()
+    local debug = ns.db.settings.debug == true
+    local recent = ns.Log.recent
+    local first = debug and 1 or math.max(1, #recent - SESSION_LINES + 1)
     local lines = {}
-    for i, l in ipairs(ns.Log.recent) do lines[i] = l end
+    for i = first, #recent do lines[#lines + 1] = recent[i] end
     local disabled = {}
     for feature, why in pairs(ns.Compat.disabled) do disabled[#disabled + 1] = feature .. ": " .. tostring(why) end
     ns.db.lastSession = {
@@ -265,7 +280,7 @@ function Init.SaveSession()
         tanks = table.concat(ns.Roster.tanks, ","),
         tankSource = ns.Roster.source,
         panelBuilt = ns.Panel.IsBuilt(),
-        diag = ns.Panel.Diagnose(),
+        diag = debug and ns.Panel.Diagnose() or nil,
     }
 end
 
