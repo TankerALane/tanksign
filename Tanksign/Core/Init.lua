@@ -12,6 +12,7 @@ ns.Init = Init
 -- ns.db reads and writes TanksignDB, except `settings`, which is the active profile.
 -- (The profile is not stored twice in the saved variables: `settings` lives only here.)
 local function setupDB()
+    Init.firstRun = _G.TanksignDB == nil
     local saved = ns.Settings.Migrate(_G.TanksignDB)
     _G.TanksignDB = saved
     ns.db = setmetatable({ settings = ns.Profiles.Ensure(saved) }, {
@@ -247,6 +248,7 @@ frame:SetScript("OnEvent", function(self, event, name)
         self:RegisterEvent("PLAYER_LOGOUT")
         self:UnregisterEvent("PLAYER_LOGIN")
         ns.Log.Info(L.LOADED, ns.VERSION)
+        if Init.firstRun then ns.Log.Info(L.WELCOME) end
     elseif event == "PLAYER_LOGOUT" then
         Init.SaveSession()
     else

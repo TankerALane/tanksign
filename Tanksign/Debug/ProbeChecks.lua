@@ -65,6 +65,7 @@ ns.ProbeChecks = {
     -- Nameplates
     { id = "C_NamePlate.GetNamePlates", kind = "api", area = "Nameplates", why = "list visible nameplates" },
     { id = "C_NamePlate.GetNamePlateForUnit", kind = "api", area = "Nameplates", why = "find the plate frame of a unit (for the glow)" },
+    { id = "C_CVar.GetCVar", kind = "api", area = "Nameplates", why = "read nameplateShowEnemies: the empty panel says when enemy nameplates are off" },
     { id = "ev:NAME_PLATE_UNIT_ADDED", kind = "event", area = "Nameplates", why = "a nameplate token appeared" },
     { id = "ev:NAME_PLATE_UNIT_REMOVED", kind = "event", area = "Nameplates", why = "a nameplate token went away" },
     { id = "x:nameplates", kind = "custom", area = "Nameplates", why = "visible plates, their unit tokens, nameplate CVars", test = "/dump #C_NamePlate.GetNamePlates()" },

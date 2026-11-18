@@ -139,6 +139,7 @@ a TANK-role tank in party1, 8 units per sample):
 |---|---|---|---|---|
 | `C_NamePlate.GetNamePlates` | api | list visible nameplates | `/dump type(C_NamePlate.GetNamePlates)` -> "function" | ? |
 | `C_NamePlate.GetNamePlateForUnit` | api | find the plate frame of a unit (for the glow) | `/dump type(C_NamePlate.GetNamePlateForUnit)` -> "function" | ? |
+| `C_CVar.GetCVar` | api | read nameplateShowEnemies: the empty panel says when enemy nameplates are off | `/dump type(C_CVar.GetCVar)` -> "function" | ? |
 | `ev:NAME_PLATE_UNIT_ADDED` | event | a nameplate token appeared | `/dump C_EventUtils.IsEventValid("NAME_PLATE_UNIT_ADDED")` -> true | ? |
 | `ev:NAME_PLATE_UNIT_REMOVED` | event | a nameplate token went away | `/dump C_EventUtils.IsEventValid("NAME_PLATE_UNIT_REMOVED")` -> true | ? |
 | `x:nameplates` | custom | visible plates, their unit tokens, nameplate CVars | `/dump #C_NamePlate.GetNamePlates()` | ? |

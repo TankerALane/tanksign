@@ -295,6 +295,11 @@ function Panel.UpdateAll()
             any = true
         end
     end
+    if not any then
+        -- Read as a plain string on Forever (probe reports 1 to 4: nameplateShowEnemies="1").
+        local ok, v = Compat.Call("platesHint", "C_CVar.GetCVar", "nameplateShowEnemies")
+        emptyText:SetText((ok and v == "0") and L.PANEL_PLATES_OFF or L.PANEL_EMPTY)
+    end
     emptyText:SetShown(not any)
     -- How many rows the secure layout shows: the check that the restricted snippet works.
     local visible = 0

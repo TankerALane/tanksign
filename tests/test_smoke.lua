@@ -31,6 +31,17 @@ H.test("loads on Forever, creates only the allowed globals", function()
     H.eq(type(env.SlashCmdList.TANKSIGN), "function")
 end)
 
+H.test("welcome line on the first install only", function()
+    local _, ctl = boot()
+    H.ok(ctl.chatText():find("Welcome!", 1, true), ctl.chatText())
+    local env2, ctl2 = M.new()
+    env2.TanksignDB = { schema = 3, profiles = { Default = {} }, profile = "Default" }
+    ctl2.load(H.ROOT)
+    ctl2.fire("ADDON_LOADED", "Tanksign")
+    ctl2.fire("PLAYER_LOGIN")
+    H.ok(not ctl2.chatText():find("Welcome!", 1, true), "not when saved settings exist")
+end)
+
 H.test("help and version commands", function()
     local _, ctl = boot()
     ctl.slash("")

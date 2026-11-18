@@ -192,6 +192,23 @@ H.test("logout saves a session record for reading from SavedVariables", function
     H.ok(env.TanksignDB.lastSession.diag, "debug on keeps the diagnosis")
 end)
 
+H.test("empty panel says when enemy nameplates are off", function()
+    local env, ctl = boot()
+    local cvars = { nameplateShowEnemies = "0" }
+    env.C_CVar = { GetCVar = function(name) return cvars[name] end }
+    ctl.ns.Panel.UpdateAll()
+    local function emptyLine()
+        for _, f in ipairs(ctl.frames) do
+            local t = f._text
+            if t == "No enemy nameplates" or (type(t) == "string" and t:find("nameplates are off", 1, true)) then return t end
+        end
+    end
+    H.ok((emptyLine() or ""):find("nameplates are off", 1, true), tostring(emptyLine()))
+    cvars.nameplateShowEnemies = "1"
+    ctl.ns.Panel.UpdateAll()
+    H.eq(emptyLine(), "No enemy nameplates")
+end)
+
 H.test("help: short list, the rest under /ts help more", function()
     local _, ctl = boot()
     ctl.slash("")

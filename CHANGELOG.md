@@ -12,6 +12,9 @@ All notable changes to Tanksign. Versions follow semantic versioning; 0.x releas
 - Smaller saved data: the session record written at logout keeps the last 40 log lines (it kept
   400 and a panel diagnosis). With `/ts debug` on it keeps everything, as before.
 - The mark recorder's chat message is reworded.
+- When enemy nameplates are turned off, the empty panel says so ("Enemy nameplates are off")
+  instead of only "No enemy nameplates".
+- A one-time welcome line on the first install: left-click skull, right-click X, /ts options.
 - Palette: the `section` color added to Fellowship Ledger's Plain skin in its 1.13.0 is copied too.
 
 ## 0.9.1 (beta): markers changed by other players
