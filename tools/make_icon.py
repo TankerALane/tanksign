@@ -120,9 +120,12 @@ def shade_icon(px, py, pixel):
 
 def shade_skull_mask(px, py, pixel):
     """White skull with holes, transparent elsewhere (tinted with SetVertexColor in game)."""
-    # Re-centre the skull (it sits a little high in the icon layout) and enlarge it.
-    qx = 0.5 + (px - 0.5) * 0.5
-    qy = 0.5 + (py - 0.5) * 0.5 + 0.015
+    # Centre the skull and enlarge it, with a small margin on every side. In skull() space the
+    # skull spans y 0.23 (cranium top) to 0.675 (jaw bottom), so its middle is 0.4525 and it is
+    # 0.445 tall; scaled by 0.49 it fills about 91% of the texture height. (Before 0.9.2 the
+    # middle was off, and the top of the cranium ran past the texture edge: cut off in game.)
+    qx = 0.5 + (px - 0.5) * 0.49
+    qy = 0.4525 + (py - 0.5) * 0.49
     k = skull(qx, qy)
     a = cover(k, pixel * 0.5) * (1 - cover(skull_holes(qx, qy), pixel * 0.5))
     return (1.0, 1.0, 1.0, a)
