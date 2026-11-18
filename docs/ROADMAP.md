@@ -10,6 +10,18 @@ Each stage ends with a commit, a test run, and an in-game checklist for Austin.
 | 4 | (dropped: Forever allows no addon targeting, not even secure clicks on nameplate tokens) | |
 | 5 | Options panel and the remaining settings, alerts, profiles; right-click cross and marker icons (0.5.0) | done: confirmed in game |
 | 6 | Icon and logo, README with screenshots, CHANGELOG, release packaging | done: v0.9.0 beta released on GitHub and CurseForge (file 9488491) |
+| 7 | Beta: markers changed by others (0.9.1, D-014); tidier commands, saved data, profiles, nameplates-off hint, welcome, `/ts disable`/`enable`, centred skull (0.9.2) | 0.9.1 released (CurseForge file 9496090); 0.9.2 waiting for its in-game checks |
+| 8 | 1.0.0 | see below |
+
+## Before 1.0.0
+
+- [x] Used in a real group, with a tank, in dungeons: "worked great" (Austin, 2026-11-18).
+- [ ] 0.9.2 in-game checks (short help, nameplates-off hint, new profiles from defaults, centred
+      skull, `/ts disable` / `/ts enable`), then release 0.9.2.
+- [ ] Raid without leader or assistant: "can't mark" in the title and a one-time chat warning.
+- [ ] A hunter pet or totem nearby: its row is dimmed.
+- [ ] A week or two of beta with no open bug reports (CurseForge comments, GitHub issues).
+- [ ] Release: version 1.0.0, CHANGELOG, README status line, CurseForge description pasted.
 
 ## Open questions the probe answers
 

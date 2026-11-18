@@ -174,3 +174,5 @@ which marked mob changed. Costs: removing just one of your markers, or someone m
 no nameplate on your screen, also clears both icons; one click restores them.
 Confirmed in game by Austin (2026-11-07): square or X put on the skull mob clears both icons; a marker
 on an unmarked mob leaves them; Tanksign's own clicks and keys never clear them.
+Used in a real group with a tank, in dungeons, by Austin (2026-11-18): "it worked great" (0.9.1
+and the 0.9.2 work in progress).
