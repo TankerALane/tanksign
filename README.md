@@ -6,8 +6,9 @@
 you, each with a live health bar, shows which ones the tank holds, and puts the skull on a mob with
 one click. It is an addon for World of Warcraft, built for **WoW Forever**.
 
-> **Status: 0.9.2 beta.** Everything below is confirmed in game on WoW Forever (open world and
-> dungeons, in combat). See [docs/ROADMAP.md](docs/ROADMAP.md).
+> **Status: 1.0.0.** Confirmed in game on WoW Forever, solo and in group dungeons, in combat.
+> Not seen in game yet: the dimming of pets and totems, and the raid "can't mark" warning.
+> See [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## Screenshots
 

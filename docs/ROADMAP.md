@@ -11,17 +11,19 @@ Each stage ends with a commit, a test run, and an in-game checklist for Austin.
 | 5 | Options panel and the remaining settings, alerts, profiles; right-click cross and marker icons (0.5.0) | done: confirmed in game |
 | 6 | Icon and logo, README with screenshots, CHANGELOG, release packaging | done: v0.9.0 beta released on GitHub and CurseForge (file 9488491) |
 | 7 | Beta: markers changed by others (0.9.1, D-014); tidier commands, saved data, profiles, nameplates-off hint, welcome, `/ts disable`/`enable`, centred skull (0.9.2) | 0.9.1 released (CurseForge file 9496090); 0.9.2 checks passed, released |
-| 8 | 1.0.0 | see below |
+| 8 | 1.0.0 | released 2026-11-18 (Austin chose to ship before the raid and pet checks; listed as not seen) |
 
 ## Before 1.0.0
 
 - [x] Used in a real group, with a tank, in dungeons: "worked great" (Austin, 2026-11-18).
 - [x] 0.9.2 in-game checks (short help, nameplates-off hint, new profiles from defaults, centred
       skull, `/ts disable` / `/ts enable`), then release 0.9.2 (all passed, Austin, 2026-11-18).
-- [ ] Raid without leader or assistant: "can't mark" in the title and a one-time chat warning.
-- [ ] A hunter pet or totem nearby: its row is dimmed.
-- [ ] A week or two of beta with no open bug reports (CurseForge comments, GitHub issues).
-- [ ] Release: version 1.0.0, CHANGELOG, README status line, CurseForge description pasted.
+- [ ] Raid without leader or assistant: "can't mark" in the title and a one-time chat warning
+      (not seen in game at 1.0.0; listed in the README and CHANGELOG).
+- [ ] A hunter pet or totem nearby: its row is dimmed (not seen in game at 1.0.0).
+- [ ] A week or two of beta with no open bug reports: skipped; Austin shipped 1.0.0 the same day
+      as 0.9.2 after group use went well.
+- [x] Release: version 1.0.0, CHANGELOG, README status line. CurseForge description: Austin.
 
 ## Open questions the probe answers
 

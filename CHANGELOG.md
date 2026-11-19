@@ -2,6 +2,24 @@
 
 All notable changes to Tanksign. Versions follow semantic versioning; 0.x releases are pre-releases.
 
+## 1.0.0: first full release
+
+Tanksign for WoW Forever, out of beta. Used in group dungeons with a tank. Everything from the
+0.9.x betas:
+
+- A panel of the enemy mobs around you (one row per enemy nameplate) with live health bars,
+  green when a tank holds the mob, red when it is loose, grey before the pull.
+- Left-click a row for the skull, right-click for the cross, in combat too. Your skull and X show
+  on the row and above the nameplate, and clear when another player changes markers in a way
+  Tanksign cannot follow.
+- Key bindings: skull the tank's target, skull the mob under the mouse, toggle Tanksign.
+- Tags (elite, rare, boss, caster), a gold border on your target's row, dimmed pets and totems.
+- An options page, profiles with automatic Dungeon / Raid switching, optional sound or chat line.
+- `/ts disable` and `/ts enable` to hide everything or bring it back.
+
+Not seen in game yet: the dimming of pets and totems, and the raid "can't mark" warning. Please
+report them on GitHub if they misbehave.
+
 ## 0.9.2 (beta): tidier commands and saved data
 
 - `/ts disable` turns Tanksign off and hides its whole window; `/ts enable` brings both back.
